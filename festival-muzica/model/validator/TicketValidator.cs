@@ -19,6 +19,14 @@ public class TicketValidator : IValidator<Ticket>
         {
             errors += "Client is invalid\n";
         }
+        else if (entity.NumberOfSeats < 0)
+        {
+            errors += "Number of seats is invalid\n";
+        }
+        else if (entity.Price < 0)
+        {
+            errors += "Price is invalid\n";
+        }
 
         if (errors.Length > 0)
         {

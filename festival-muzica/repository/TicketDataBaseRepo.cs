@@ -25,7 +25,12 @@ namespace festival_muzica.repository
             IList<Ticket> tickets = new List<Ticket>();
             using (var cmd = con.CreateCommand())
             {
-                cmd.CommandText = "SELECT * FROM Ticket WHERE showId=@showId JOIN Client ON Ticket.clientId = Client.id";
+                cmd.CommandText = """
+                SELECT t.id, t.showId, t.clientId, c.name, t.numberOfSeats, t.price
+                FROM Ticket t
+                JOIN Client c ON t.clientId = c.id
+                WHERE t.showId = @showId
+                """;
                 cmd.Parameters.Add(new SQLiteParameter("@showId", show.Id));
                 using (var dataReader = cmd.ExecuteReader())
                 {
@@ -52,8 +57,13 @@ namespace festival_muzica.repository
             IList<Ticket> tickets = new List<Ticket>();
             using (var cmd = con.CreateCommand())
             {
-                cmd.CommandText = "SELECT * FROM Ticket WHERE clientId=@clientId JOIN Client ON Ticket.clientId = Client.id";
-                cmd.Parameters.Add(new SQLiteParameter("@clientId", name));
+                cmd.CommandText = """
+                SELECT t.id, t.showId, t.clientId, c.name, t.numberOfSeats, t.price
+                FROM Ticket t
+                JOIN Client c ON t.clientId = c.id
+                WHERE c.name = @name
+                """;
+                cmd.Parameters.Add(new SQLiteParameter("@name", name));
                 using (var dataReader = cmd.ExecuteReader())
                 {
                     if (dataReader.Read())
@@ -78,7 +88,12 @@ namespace festival_muzica.repository
             IDbConnection con = DBUtils.getConnection(props);
             using (var cmd = con.CreateCommand())
             {
-                cmd.CommandText = "SELECT * FROM Ticket WHERE id=@id JOIN Client ON Ticket.clientId = Client.id";
+                cmd.CommandText = """
+                SELECT t.id, t.showId, t.clientId, c.name, t.numberOfSeats, t.price
+                FROM Ticket t
+                JOIN Client c ON t.clientId = c.id
+                WHERE t.id = @id
+                """;
                 cmd.Parameters.Add(new SQLiteParameter("@id", id));
                 using (var dataReader = cmd.ExecuteReader())
                 {
@@ -137,7 +152,9 @@ namespace festival_muzica.repository
             {
                 using (var cmd = con.CreateCommand())
                 {
-                    cmd.CommandText = "INSERT INTO Ticket (showId, clientId, numberOfSeats, price) VALUES (@showId, @clientId, @numberOfSeats, @price)";
+                    cmd.CommandText = """
+                    INSERT INTO Ticket (showId, clientId, numberOfSeats, price) VALUES (@showId, @clientId, @numberOfSeats, @price)
+                    """;
                     cmd.Parameters.Add(new SQLiteParameter("@showId", entity.ShowId));
                     cmd.Parameters.Add(new SQLiteParameter("@clientId", entity.client.Id));
                     cmd.Parameters.Add(new SQLiteParameter("@numberOfSeats", entity.NumberOfSeats));
@@ -162,7 +179,9 @@ namespace festival_muzica.repository
             {
                 using (var cmd = con.CreateCommand())
                 {
-                    cmd.CommandText = "DELETE FROM Ticket WHERE id=@id";
+                    cmd.CommandText = """
+                    DELETE FROM Ticket WHERE id=@id
+                    """;
                     cmd.Parameters.Add(new SQLiteParameter("@id", id));
                     cmd.ExecuteNonQuery();
                     log.InfoFormat("Exiting Delete with id: {0}", id);
@@ -184,7 +203,9 @@ namespace festival_muzica.repository
             {
                 using (var cmd = con.CreateCommand())
                 {     
-                    cmd.CommandText = "UPDATE Ticket SET showId=@showId, clientId=@clientId, numberOfSeats=@numberOfSeats, price=@price WHERE id=@id";
+                    cmd.CommandText = """
+                    UPDATE Ticket SET showId=@showId, clientId=@clientId, numberOfSeats=@numberOfSeats, price=@price WHERE id=@id
+                    """;
                     cmd.Parameters.Add(new SQLiteParameter("@showId", entity.ShowId));
                     cmd.Parameters.Add(new SQLiteParameter("@clientId", entity.client.Id));
                     cmd.Parameters.Add(new SQLiteParameter("@numberOfSeats", entity.NumberOfSeats));

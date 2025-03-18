@@ -121,6 +121,7 @@ namespace festival_muzica.repository
                         int numberOfSeats = dataReader.GetInt32(4);
                         int price = dataReader.GetInt32(5);
                         tickets.Add(new Ticket(id, showId, new Client(clientId, clientName), numberOfSeats, price));
+                        log.InfoFormat("Found ticket: {0}", tickets.Last());
                     }
                 }
             }

@@ -70,11 +70,12 @@ namespace festival_muzica.repository
                 cmd.CommandText = "SELECT * FROM Client";
                 using (var dataReader = cmd.ExecuteReader())
                 {
-                    while(dataReader.Read())
+                    while (dataReader.Read())
                     {
                         long id = dataReader.GetInt64(0);
                         string name = dataReader.GetString(1);
                         clients.Add(new Client(id, name));
+                        log.InfoFormat("Found client: {0}", clients.Last());
                     }
                 }
             }

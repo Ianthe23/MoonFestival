@@ -142,6 +142,7 @@ namespace festival_muzica.repository
                         int availableSeats = dataReader.GetInt32(5);
                         int soldSeats = dataReader.GetInt32(6);
                         shows.Add(new Show(id, name, artistName, date, location, availableSeats, soldSeats));
+                        log.InfoFormat("Found show: {0}", shows.Last());
                     }
                 }
             }

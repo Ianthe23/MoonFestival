@@ -6,14 +6,14 @@ using System.Reflection;
 using System.Data.SQLite;
 using System.Configuration;
 using festival_muzica.repository;
-
-[assembly: log4net.Config.XmlConfigurator(ConfigFile = "log4net.config", Watch = true)]
+using log4net.Core;
 
 namespace festival_muzica
 {
     public class Program
     {
         private static readonly ILog log = LogManager.GetLogger(typeof(Program));
+
         static string? GetConnectionStringByName(string name)
         {
             string? returnValue = null;
@@ -29,23 +29,43 @@ namespace festival_muzica
 
         static void Main(string[] args)
         {
-            // Create database tables
-            CreateDatabase.CreateTables();
-
-            string configFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "log4net.config");
-            FileInfo fileInfo;
-
-            try
+            // Clear existing logs
+            string baseDir = AppDomain.CurrentDomain.BaseDirectory;
+            string projectRoot = Path.GetFullPath(Path.Combine(baseDir, "..", "..", ".."));
+            string logsPath = Path.Combine(projectRoot, "logs");
+            
+            if (Directory.Exists(logsPath))
             {
-                fileInfo = new System.IO.FileInfo(configFilePath);
+                foreach (var file in Directory.GetFiles(logsPath, "*.log"))
+                {
+                    File.Delete(file);
+                }
             }
-            catch (Exception e)
-            {
-                Console.WriteLine("Error: {0}", e.Message);
+            
+            Directory.CreateDirectory(logsPath);
+            GlobalContext.Properties["LogPath"] = logsPath;
+
+            // Configure log4net
+            var logRepository = LogManager.GetRepository(Assembly.GetEntryAssembly());
+            string configFilePath = Path.Combine(baseDir, "log4net.config");
+            log.Info($"Loading log4net configuration from: {configFilePath}");
+            
+            if (!File.Exists(configFilePath)) {
+                log.Error($"Configuration file not found at: {configFilePath}");
                 return;
             }
+            
+            XmlConfigurator.Configure(logRepository, new FileInfo(configFilePath));
+            log.Info("Successfully configured log4net");
 
-            XmlConfigurator.Configure(fileInfo);
+            // Test logging
+            log.Debug("Debug message - testing log4net configuration");
+            log.Info("Info message - testing log4net configuration");
+            log.Warn("Warning message - testing log4net configuration");
+            log.Error("Error message - testing log4net configuration");
+
+            // Create database tables
+            CreateDatabase.CreateTables();
 
             log.Info("Starting the application...");
 

@@ -76,13 +76,14 @@ namespace festival_muzica.repository
                 cmd.CommandText = "SELECT * FROM Employee";
                 using (var dataReader = cmd.ExecuteReader())
                 {
-                    while(dataReader.Read())
+                    while (dataReader.Read())
                     {
                         long id = dataReader.GetInt64(0);
                         string name = dataReader.GetString(1);
                         string username = dataReader.GetString(2);
                         string password = dataReader.GetString(3);
                         employees.Add(new Employee(id, name, username, password));
+                        log.InfoFormat("Found employee: {0}", employees.Last());
                     }
                 }
             }

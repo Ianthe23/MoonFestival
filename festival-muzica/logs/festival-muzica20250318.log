@@ -1,0 +1,27 @@
+2025-03-18 11:01:33,731 [1] INFO  festival_muzica.Program - Successfully configured log4net
+2025-03-18 11:01:33,739 [1] DEBUG festival_muzica.Program - Debug message - testing log4net configuration
+2025-03-18 11:01:33,739 [1] INFO  festival_muzica.Program - Info message - testing log4net configuration
+2025-03-18 11:01:33,740 [1] WARN  festival_muzica.Program - Warning message - testing log4net configuration
+2025-03-18 11:01:33,741 [1] ERROR festival_muzica.Program - Error message - testing log4net configuration
+2025-03-18 11:01:33,823 [1] INFO  festival_muzica.Program - Starting the application...
+2025-03-18 11:01:33,866 [1] INFO  festival_muzica.repository.EmployeeDataBaseRepo - Initializing EmployeeDataBaseRepo
+2025-03-18 11:01:33,867 [1] INFO  festival_muzica.repository.ShowDataBaseRepo - Initializing ShowDataBaseRepo
+2025-03-18 11:01:33,868 [1] INFO  festival_muzica.repository.TicketDataBaseRepo - Initializing TicketDataBaseRepo
+2025-03-18 11:01:33,869 [1] INFO  festival_muzica.repository.ClientDataBaseRepo - Initializing ClientDataBaseRepo
+2025-03-18 11:01:33,871 [1] INFO  festival_muzica.repository.EmployeeDataBaseRepo - Entering FindAll
+2025-03-18 11:01:33,879 [1] INFO  festival_muzica.repository.EmployeeDataBaseRepo - Found employee: Employee{id=1, name='Ionescu Mihai', username='mihai101', password='1234567890'}
+2025-03-18 11:01:33,881 [1] INFO  festival_muzica.repository.EmployeeDataBaseRepo - Found employee: Employee{id=2, name='Popescu Ana', username='ana23', password='0987654321'}
+2025-03-18 11:01:33,882 [1] INFO  festival_muzica.repository.EmployeeDataBaseRepo - Exiting FindAll with 2 employees
+2025-03-18 11:01:33,884 [1] INFO  festival_muzica.repository.ShowDataBaseRepo - Entering FindAll
+2025-03-18 11:01:33,885 [1] INFO  festival_muzica.repository.ShowDataBaseRepo - Found show: Show{id=1, name='Bon-Jovi', artistName='Jon Bon Jovi', date=3/17/2025 10:00:00 AM, location='Bucharest', availableSeats=300000, soldSeats=150000}
+2025-03-18 11:01:33,887 [1] INFO  festival_muzica.repository.ShowDataBaseRepo - Found show: Show{id=2, name='Coldplay', artistName='Chris Martin', date=3/18/2025 10:00:00 AM, location='Bucharest', availableSeats=300000, soldSeats=150000}
+2025-03-18 11:01:33,888 [1] INFO  festival_muzica.repository.ShowDataBaseRepo - Exiting FindAll with 2 shows
+2025-03-18 11:01:33,890 [1] INFO  festival_muzica.repository.TicketDataBaseRepo - Entering FindAll
+2025-03-18 11:01:33,892 [1] INFO  festival_muzica.repository.TicketDataBaseRepo - Found ticket: Ticket{id=5, showId=1, client=Client{id=1, name='Alexe Maria'}, numberOfSeats=3, price=100}
+2025-03-18 11:01:33,893 [1] INFO  festival_muzica.repository.TicketDataBaseRepo - Found ticket: Ticket{id=6, showId=2, client=Client{id=2, name='Rosu Diana'}, numberOfSeats=10, price=100}
+2025-03-18 11:01:33,894 [1] INFO  festival_muzica.repository.TicketDataBaseRepo - Exiting FindAll
+2025-03-18 11:01:33,896 [1] INFO  festival_muzica.repository.ClientDataBaseRepo - Entering FindAll
+2025-03-18 11:01:33,897 [1] INFO  festival_muzica.repository.ClientDataBaseRepo - Found client: Client{id=1, name='Alexe Maria'}
+2025-03-18 11:01:33,899 [1] INFO  festival_muzica.repository.ClientDataBaseRepo - Found client: Client{id=2, name='Rosu Diana'}
+2025-03-18 11:01:33,900 [1] INFO  festival_muzica.repository.ClientDataBaseRepo - Exiting FindAll with 2 clients
+2025-03-18 11:01:33,901 [1] INFO  festival_muzica.Program - Application ended.

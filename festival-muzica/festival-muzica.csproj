@@ -14,4 +14,10 @@
     <PackageReference Include="System.Data.SQLite" Version="1.0.117" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="log4net.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

@@ -1,0 +1,387 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:festival_muzica_avalonia.ViewModels"
+        xmlns:conv="clr-namespace:festival_muzica_avalonia.Converters"
+        xmlns:models="clr-namespace:festival_muzica_avalonia.Models"
+        xmlns:dataGrid="clr-namespace:Avalonia.Controls.DataGrid;assembly=Avalonia.Controls.DataGrid"
+        x:Class="festival_muzica_avalonia.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Title="Festival Muzica"
+        Width="800"
+        Height="600"
+        WindowStartupLocation="CenterScreen"
+        Background="#ffffff">
+    <Window.Resources>
+        <!-- Register the converter -->
+        <conv:FirstCharConverter x:Key="FirstCharConverter" />
+    </Window.Resources>
+
+    <Window.Styles>
+        <!-- Define a style for Expander headers -->
+        <Style Selector="Expander /template/ ToggleButton#PART_ExpanderToggle">
+            <Setter Property="FontSize" Value="16" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="Foreground" Value="#1a1a1a" /> <!-- Dark gray text -->
+            <Setter Property="Padding" Value="10" />
+        </Style>
+
+        <!-- Define a style for TextBox and ComboBox -->
+        <Style Selector="TextBox, ComboBox">
+            <Setter Property="Background" Value="#f5f5f5" /> <!-- Light gray background -->
+            <Setter Property="Foreground" Value="#1a1a1a" /> <!-- Dark gray text -->
+            <Setter Property="BorderBrush" Value="#e0e0e0" /> <!-- Light gray border -->
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Padding" Value="8" />
+            <Setter Property="CornerRadius" Value="4" /> <!-- Rounded corners -->
+        </Style>
+
+        <!-- Define a style for the employee circle -->
+        <Style Selector="Border#EmployeeCircle">
+            <Setter Property="Background" Value="#fcba56" /> <!-- Orange background -->
+            <Setter Property="CornerRadius" Value="20" /> <!-- Fully rounded -->
+            <Setter Property="Width" Value="40" />
+            <Setter Property="Height" Value="40" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Margin" Value="0, 0, 10, 0" />
+        </Style>
+
+        <!-- Define a style for the employee name -->
+        <Style Selector="TextBlock#EmployeeName">
+            <Setter Property="FontSize" Value="16" />
+            <Setter Property="Foreground" Value="#1a1a1a" /> <!-- Dark gray text -->
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+    </Window.Styles>
+
+    <Grid>
+        <!-- Definim coloanele: una pentru Sidebar și una pentru conținutul principal -->
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="240" /> <!-- Sidebar -->
+            <ColumnDefinition Width="*" />   <!-- Conținut principal -->
+        </Grid.ColumnDefinitions>
+
+        <!-- Sidebar -->
+        <Border Grid.Column="0"
+                Background="#ffffff" 
+                Padding="10"
+                BorderBrush="#e0e0e0" 
+                BorderThickness="0, 0, 1, 0"> <!-- Right border only -->
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <!-- Main content of sidebar -->
+                <StackPanel Grid.Row="0" Spacing="10">
+                    <!-- First expandable section -->
+                    <Expander Header="Search details" 
+                              Background="#ffffff"
+                              Padding="10"
+                              HorizontalAlignment="Stretch">
+                        <StackPanel Spacing="10">
+                            <TextBox Watermark="Enter the name of the artist"
+                                     Background="#f5f5f5"
+                                     Padding="8" />
+                            <TextBox Watermark="Enter the date"
+                                     Background="#f5f5f5"
+                                     Padding="8" />
+                            <Button Content="Search"
+                                    Background="#fcba56"
+                                    Foreground="#ffffff"
+                                    BorderBrush="#e0e0e0"
+                                    BorderThickness="1"
+                                    CornerRadius="4"
+                                    Padding="8"
+                                    VerticalAlignment="Center"
+                                    HorizontalAlignment="Right">
+                                <StackPanel Orientation="Horizontal" Spacing="5">
+                                    <TextBlock Text="Search"
+                                               FontSize="16"
+                                               Foreground="#ffffff"
+                                               VerticalAlignment="Center"
+                                               HorizontalAlignment="Center" />
+                                </StackPanel>
+                            </Button>
+                                    
+                        </StackPanel>
+                    </Expander>
+
+                    <!-- Second expandable section -->
+                    <Expander Header="Sell ticket"
+                              Background="#ffffff"
+                              Padding="10"
+                              HorizontalAlignment="Stretch">
+                        <StackPanel Spacing="10">
+                            <ComboBox PlaceholderText="Select the festival"
+                                     Background="#f5f5f5"
+                                     Padding="8"
+                                     HorizontalAlignment="Stretch" />
+                            <TextBox Watermark="Enter the client's name"
+                                     Background="#f5f5f5"
+                                     Padding="8" />
+                            <TextBox Watermark="Enter the number of seats"
+                                     Background="#f5f5f5"
+                                     Padding="8" />
+                            <Button Content="Sell"
+                                    Background="#fcba56"
+                                    Foreground="#ffffff"
+                                    BorderBrush="#e0e0e0"
+                                    BorderThickness="1"
+                                    CornerRadius="4"
+                                    Padding="8"
+                                    VerticalAlignment="Center"
+                                    HorizontalAlignment="Right">
+                                <StackPanel Orientation="Horizontal" Spacing="5">
+                                    <TextBlock Text="Sell"
+                                               FontSize="16"
+                                               Foreground="#ffffff"
+                                               VerticalAlignment="Center"
+                                               HorizontalAlignment="Center" />
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
+                    </Expander>
+                </StackPanel>
+
+                <!-- Separator -->
+                <Border Grid.Row="1"
+                        Height="1"
+                        Background="#e0e0e0"
+                        Margin="-10, 10, -10, 50" />
+
+                <!-- Employee info at bottom -->
+                <Grid Grid.Row="2" 
+                      VerticalAlignment="Bottom"
+                      Margin="0, 20, 0, 0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Cerc cu prima literă a numelui angajatului -->
+                    <Border x:Name="EmployeeCircle"
+                            Grid.Column="0">
+                        <TextBlock Text="{Binding LoggedEmployee.Username, Converter={StaticResource FirstCharConverter}}"
+                                   FontSize="20"
+                                   Foreground="#ffffff" 
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center" />
+                    </Border>
+
+                    <!-- Numele angajatului logat -->
+                    <TextBlock x:Name="EmployeeName"
+                               Grid.Column="1"
+                               Text="{Binding LoggedEmployee.Username}" />
+
+                    <!-- Logout button -->
+                    <Button Grid.Column="2"
+                            Background="#ffffff"
+                            Foreground="#ffffff"
+                            BorderBrush="#e0e0e0"
+                            BorderThickness="1"
+                            CornerRadius="4"
+                            Margin="10, 0, 0, 0"
+                            Padding="10"
+                            VerticalAlignment="Center"
+                            Click="LogoutButton_Click">
+                        <StackPanel Orientation="Horizontal" Spacing="5">
+                            <Image Source="avares://festival-muzica-avalonia/Assets/logout.png" Width="20" Height="20" />
+                        </StackPanel>
+                    </Button>
+                </Grid>
+            </Grid>
+        </Border>
+
+        <!-- Conținutul principal al ferestrei -->
+        <Border Grid.Column="1"
+                Background="#ffffff">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <!-- Header -->
+                <Border Grid.Row="0"
+                        Background="#ffffff"
+                        BorderBrush="#e0e0e0"
+                        BorderThickness="0, 0, 0, 1"
+                        Padding="20, 0, 20, 20"
+                        Margin="0, 0, 0, 20">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Right side navigation -->
+                        <StackPanel Grid.Column="1" 
+                                  Orientation="Horizontal" 
+                                  Spacing="24"
+                                  VerticalAlignment="Center">
+                            <TextBlock Text="Shows"
+                                     FontSize="16"
+                                     Foreground="#666666"
+                                     Cursor="Hand"
+                                     Padding="0, 20, 0, 0"
+                                     PointerPressed="ShowsTextBlock_PointerPressed"/>
+                            <TextBlock Text="Tickets"
+                                     FontSize="16"
+                                     Foreground="#666666"
+                                     Cursor="Hand"
+                                     Padding="0, 20, 0, 0"
+                                     PointerPressed="TicketsTextBlock_PointerPressed"/>
+                            <TextBlock Text="Clients"
+                                     FontSize="16"
+                                     Foreground="#666666"
+                                     Cursor="Hand"
+                                     Padding="0, 20, 0, 0"
+                                     PointerPressed="ReportsTextBlock_PointerPressed"/>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <!-- Main content -->
+                <Border Grid.Row="1" Padding="20">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <!-- Header -->
+                        <TextBlock Text="Shows" 
+                                   TextAlignment="Left"
+                                   FontSize="24"
+                                   FontWeight="Bold"
+                                   Margin="0, 0, 0, 20" />
+
+                        <!-- Modern ListBox -->
+                        <Border Grid.Row="1"
+                                Background="#ffffff"
+                                BorderBrush="#e0e0e0"
+                                BorderThickness="1"
+                                CornerRadius="8"
+                                >
+                            <ListBox ItemsSource="{Binding Shows}"
+                                    Background="Transparent"
+                                    BorderThickness="0"
+                                    Padding="8">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border Background="#ffffff"
+                                                BorderBrush="#e0e0e0"
+                                                BorderThickness="1"
+                                                CornerRadius="6"
+                                                Padding="16"
+                                                Margin="0, 4"
+                                                BoxShadow="0 0 6 .2 #66000000">
+                                            <Grid>
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="Auto"/>
+                                                    <RowDefinition Height="Auto"/>
+                                                    <RowDefinition Height="Auto"/>
+                                                </Grid.RowDefinitions>
+
+                                                <!-- Title and Artist -->
+                                                <Grid Grid.Row="0" Margin="0, 0, 0, 8">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="*"/>
+                                                        <ColumnDefinition Width="Auto"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    
+                                                    <StackPanel Grid.Column="0" Spacing="2">
+                                                        <TextBlock Text="{Binding Name}"
+                                                                 FontSize="18"
+                                                                 FontWeight="Bold"
+                                                                 Foreground="#1a1a1a"/>
+                                                        <TextBlock Text="{Binding ArtistName}"
+                                                                 FontSize="14"
+                                                                 Foreground="#fcba56"/>
+                                                    </StackPanel>
+                                                    
+                                                    <Button Grid.Column="1"
+                                                            Background="#f5f5f5"
+                                                            Foreground="#1a1a1a"
+                                                            BorderThickness="0"
+                                                            CornerRadius="4"
+                                                            Padding="8, 4"
+                                                            VerticalAlignment="Center"
+                                                            Margin="8, 0, 0, 0">
+                                                        <TextBlock Text="View Details"/>
+                                                    </Button>
+                                                </Grid>
+
+                                                <!-- Date and Location -->
+                                                <Grid Grid.Row="1" Margin="0, 0, 0, 8">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="Auto"/>
+                                                        <ColumnDefinition Width="*"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    
+                                                    <StackPanel Grid.Column="0" 
+                                                              Orientation="Horizontal" 
+                                                              Spacing="16">
+                                                        <StackPanel Orientation="Horizontal" Spacing="4">
+                                                            <TextBlock Text="Date:"
+                                                                     FontSize="14"
+                                                                     Foreground="#666666"/>
+                                                            <TextBlock Text="{Binding Date, StringFormat='{}{0:MMM dd, yyyy HH:mm}'}"
+                                                                     FontSize="14"
+                                                                     Foreground="#1a1a1a"/>
+                                                        </StackPanel>
+                                                        
+                                                        <StackPanel Orientation="Horizontal" Spacing="4">
+                                                            <TextBlock Text="Location:"
+                                                                     FontSize="14"
+                                                                     Foreground="#666666"/>
+                                                            <TextBlock Text="{Binding Location}"
+                                                                     FontSize="14"
+                                                                     Foreground="#1a1a1a"/>
+                                                        </StackPanel>
+                                                    </StackPanel>
+                                                </Grid>
+
+                                                <!-- Seats Information -->
+                                                <Grid Grid.Row="2">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="Auto"/>
+                                                        <ColumnDefinition Width="*"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    
+                                                    <StackPanel Grid.Column="0" 
+                                                              Orientation="Horizontal" 
+                                                              Spacing="16">
+                                                        <StackPanel Orientation="Horizontal" Spacing="4">
+                                                            <TextBlock Text="Available:"
+                                                                     FontSize="14"
+                                                                     Foreground="#666666"/>
+                                                            <TextBlock Text="{Binding AvailableSeats}"
+                                                                     FontSize="14"
+                                                                     Foreground="#acc963"/>
+                                                        </StackPanel>
+                                                        
+                                                        <StackPanel Orientation="Horizontal" Spacing="4">
+                                                            <TextBlock Text="Sold:"
+                                                                     FontSize="14"
+                                                                     Foreground="#666666"/>
+                                                            <TextBlock Text="{Binding SoldSeats}"
+                                                                     FontSize="14"
+                                                                     Foreground="#ba4e38"/>
+                                                        </StackPanel>
+                                                    </StackPanel>
+                                                </Grid>
+                                            </Grid>
+                                        </Border>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </Border>
+                    </Grid>
+                </Border>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>

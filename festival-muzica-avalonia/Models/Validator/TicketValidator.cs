@@ -17,6 +17,10 @@ namespace festival_muzica_avalonia.Models
             {
                 errors += "Show id is invalid\n";
             }
+            else if (entity.ShowName == null)
+            {
+                errors += "Show name is invalid\n";
+            }
             else if (entity.client == null)
             {
                 errors += "Client is invalid\n";

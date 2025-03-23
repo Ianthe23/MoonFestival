@@ -7,5 +7,6 @@ namespace festival_muzica_avalonia.Repository
     {
         IEnumerable<Ticket> FindByShow(Show show);
         IEnumerable<Ticket> FindByClient(Client client);
+        IEnumerable<Ticket> FindByShowAndClient(Show show, Client client);
     }
 }

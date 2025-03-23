@@ -6,6 +6,7 @@
       <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
       <ApplicationManifest>app.manifest</ApplicationManifest>
       <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+      <AvaloniaNameGeneratorIsEnabled>true</AvaloniaNameGeneratorIsEnabled>
     </PropertyGroup>
 
     <ItemGroup>
@@ -35,6 +36,9 @@
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
       <None Update="app.config">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="Assets\barcode.png">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
     </ItemGroup>

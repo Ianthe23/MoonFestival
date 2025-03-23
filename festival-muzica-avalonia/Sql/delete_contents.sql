@@ -1,8 +1,10 @@
-DELETE FROM Employee;
-DROP TABLE Employee;
-CREATE TABLE Employee (
+DELETE FROM Ticket;
+DROP TABLE Ticket;
+CREATE TABLE Ticket (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    username TEXT NOT NULL,
-    password TEXT NOT NULL
+    showId INTEGER NOT NULL,
+    showName TEXT NOT NULL,
+    clientId INTEGER NOT NULL,
+    numberOfSeats INTEGER NOT NULL,
+    price INTEGER NOT NULL
 );
-

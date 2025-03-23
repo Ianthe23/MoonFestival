@@ -9,5 +9,6 @@ namespace festival_muzica_avalonia.Repository
         IEnumerable<Show> FindByArtist(string artist);
         IEnumerable<Show> FindByDate(DateTime date);
         IEnumerable<string> GetArtisti();
+        IEnumerable<Show> FindByArtistAndTime(string artist, string time);
     }
 }

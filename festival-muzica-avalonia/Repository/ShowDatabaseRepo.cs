@@ -95,6 +95,38 @@ namespace festival_muzica_avalonia.Repository
             return shows;
         }
 
+        public IEnumerable<Show> FindByArtistAndTime(string artist, string time)
+        {
+            log.InfoFormat("Entering FindByArtistAndTime with artist: {0} and time: {1}", artist, time);
+            IDbConnection con = DBUtils.getConnection(props);
+            IList<Show> shows = new List<Show>();
+            using (var cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "SELECT * FROM Show WHERE artist=@artist";
+                cmd.Parameters.Add(new SQLiteParameter("@artist", artist));
+                using (var dataReader = cmd.ExecuteReader())
+                {
+                    while (dataReader.Read())
+                    {
+                        var show = new Show(dataReader.GetInt64(0), 
+                                         dataReader.GetString(1),
+                                         dataReader.GetString(2), 
+                                         dataReader.GetDateTime(3),
+                                         dataReader.GetString(4),
+                                         dataReader.GetInt32(5),
+                                         dataReader.GetInt32(6));
+                                         
+                        if (show.Date.ToString("HH:mm") == time)
+                        {
+                            shows.Add(show);
+                        }
+                    }
+                }
+            }
+            log.InfoFormat("Exiting FindByArtistAndTime with artist: {0} and time: {1}", artist, time);
+            return shows;
+        }
+
         public Show? FindOne(long id)
         {
             log.InfoFormat("Entering FindOne with id: {0}", id);
@@ -117,7 +149,7 @@ namespace festival_muzica_avalonia.Repository
                         return new Show(idRead, name, artistName, date, location, availableSeats, soldSeats);
                     }
                 }
-            }   
+            }
             log.InfoFormat("Exiting FindOne with id: {0}", id);
             return null;
         }

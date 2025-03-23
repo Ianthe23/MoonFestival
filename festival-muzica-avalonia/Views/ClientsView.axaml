@@ -1,0 +1,85 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:festival_muzica_avalonia.ViewModels"
+             xmlns:models="clr-namespace:festival_muzica_avalonia.Models"
+             x:Class="festival_muzica_avalonia.Views.ClientsView"
+             x:DataType="vm:ClientsViewModel">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <TextBlock Text="Clients" 
+                   TextAlignment="Left"
+                   FontSize="24"
+                   FontWeight="Bold"
+                   Margin="0, 0, 0, 20" />
+
+        <!-- Modern ListBox -->
+        <Border Grid.Row="1"
+                Background="#ffffff"
+                BorderBrush="#e0e0e0"
+                BorderThickness="1"
+                CornerRadius="8">
+            <ListBox ItemsSource="{Binding PaginatedItems}"
+                    Background="Transparent"
+                    BorderThickness="0"
+                    Padding="8">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Border Background="#ffffff"
+                                BorderBrush="#e0e0e0"
+                                BorderThickness="1"
+                                CornerRadius="6"
+                                Padding="16"
+                                Margin="0, 4"
+                                BoxShadow="0 0 6 .2 #66000000">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <StackPanel Grid.Row="0" Spacing="2">
+                                    <TextBlock Text="{Binding Name}"
+                                             FontSize="18"
+                                             FontWeight="Bold"
+                                             Foreground="#1a1a1a"/>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </Border>     
+
+        <!-- Pagination Controls -->
+        <StackPanel Grid.Row="2" 
+                    Orientation="Horizontal" 
+                    HorizontalAlignment="Center"
+                    Margin="0,20,0,0"
+                    Spacing="10">
+            <Button Content="Previous"
+                    Command="{Binding PreviousPageCommand}"
+                    IsEnabled="{Binding CanGoPrevious}"
+                    Background="#fcba56"
+                    Foreground="White"
+                    Padding="12,8"/>
+            <TextBlock VerticalAlignment="Center">
+                <Run Text="Page "/>
+                <Run Text="{Binding CurrentPage}"/>
+                <Run Text=" of "/>
+                <Run Text="{Binding TotalPages}"/>
+            </TextBlock>
+            <Button Content="Next"
+                    Command="{Binding NextPageCommand}"
+                    IsEnabled="{Binding CanGoNext}"
+                    Background="#fcba56"
+                    Foreground="White"
+                    Padding="12,8"/>
+        </StackPanel>            
+    </Grid>
+</UserControl>

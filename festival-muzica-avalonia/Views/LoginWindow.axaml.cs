@@ -17,10 +17,6 @@ namespace festival_muzica_avalonia
         public LoginWindow(ServiceFestival serviceFestival)
         {
             InitializeComponent();
-            var props = new Dictionary<string, string>
-            {
-                ["ConnectionString"] = "Data Source=db.config;Version=3;"
-            };
             this.serviceFestival = serviceFestival;
             
             // Set the window icon

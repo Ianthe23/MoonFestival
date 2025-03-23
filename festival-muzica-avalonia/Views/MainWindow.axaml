@@ -68,22 +68,35 @@
                 BorderThickness="0, 0, 1, 0"> <!-- Right border only -->
             <Grid>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" /> <!-- Logo and app name -->
+                    <RowDefinition Height="*" /> <!-- Expandable sections -->
+                    <RowDefinition Height="Auto" /> <!-- Separator -->
+                    <RowDefinition Height="Auto" /> <!-- Employee info -->
                 </Grid.RowDefinitions>
 
+                <!-- Logo-ul aplicatiei si numele aplicatiei -->
+                <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="10" Margin="0,0,0,15">
+                    <Image Source="avares://festival-muzica-avalonia/Assets/festival.png" Width="40" Height="40" />
+                    <StackPanel Orientation="Vertical" Spacing="0">
+                        <TextBlock Text="MusicMoon" FontSize="16" FontWeight="Bold" />
+                        <TextBlock Text="Festival" FontSize="12" />
+                    </StackPanel>
+                </StackPanel>
+
                 <!-- Main content of sidebar -->
-                <StackPanel Grid.Row="0" Spacing="10">
+                <StackPanel Grid.Row="1" Spacing="10">
                     <!-- First expandable section -->
                     <Expander Header="Search details" 
                               Background="#ffffff"
                               Padding="10"
                               HorizontalAlignment="Stretch">
                         <StackPanel Spacing="10">
-                            <TextBox Watermark="Enter the name of the artist"
+                            <TextBox Text="{Binding Artist}"
+                                     Watermark="Enter the name of the artist"
                                      Background="#f5f5f5"
                                      Padding="8" />
-                            <TextBox Watermark="Enter the date"
+                            <TextBox Text="{Binding Time}"
+                                     Watermark="Enter the date"
                                      Background="#f5f5f5"
                                      Padding="8" />
                             <Button Content="Search"
@@ -94,16 +107,8 @@
                                     CornerRadius="4"
                                     Padding="8"
                                     VerticalAlignment="Center"
-                                    HorizontalAlignment="Right">
-                                <StackPanel Orientation="Horizontal" Spacing="5">
-                                    <TextBlock Text="Search"
-                                               FontSize="16"
-                                               Foreground="#ffffff"
-                                               VerticalAlignment="Center"
-                                               HorizontalAlignment="Center" />
-                                </StackPanel>
-                            </Button>
-                                    
+                                    HorizontalAlignment="Right"
+                                    Click="SearchButton_Click"/>
                         </StackPanel>
                     </Expander>
 
@@ -113,14 +118,24 @@
                               Padding="10"
                               HorizontalAlignment="Stretch">
                         <StackPanel Spacing="10">
-                            <ComboBox PlaceholderText="Select the festival"
+                            <ComboBox ItemsSource="{Binding Shows}"
+                                     PlaceholderText="Select the show"
                                      Background="#f5f5f5"
                                      Padding="8"
-                                     HorizontalAlignment="Stretch" />
-                            <TextBox Watermark="Enter the client's name"
+                                     HorizontalAlignment="Stretch"
+                                     SelectedValue="{Binding SelectedShow}">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Name}" />
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+                            <TextBox Text="{Binding ClientName}"
+                                     Watermark="Enter the client's name"
                                      Background="#f5f5f5"
                                      Padding="8" />
-                            <TextBox Watermark="Enter the number of seats"
+                            <TextBox Text="{Binding NumberOfSeats}"
+                                     Watermark="Enter the number of seats"
                                      Background="#f5f5f5"
                                      Padding="8" />
                             <Button Content="Sell"
@@ -131,7 +146,8 @@
                                     CornerRadius="4"
                                     Padding="8"
                                     VerticalAlignment="Center"
-                                    HorizontalAlignment="Right">
+                                    HorizontalAlignment="Right"
+                                    Click="SellButton_Click">
                                 <StackPanel Orientation="Horizontal" Spacing="5">
                                     <TextBlock Text="Sell"
                                                FontSize="16"
@@ -145,22 +161,21 @@
                 </StackPanel>
 
                 <!-- Separator -->
-                <Border Grid.Row="1"
+                <Border Grid.Row="2"
                         Height="1"
                         Background="#e0e0e0"
-                        Margin="-10, 10, -10, 50" />
+                        Margin="-10,10,-10,10" />
 
                 <!-- Employee info at bottom -->
-                <Grid Grid.Row="2" 
-                      VerticalAlignment="Bottom"
-                      Margin="0, 20, 0, 0">
+                <Grid Grid.Row="3" 
+                      Margin="0,0,0,10">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
 
-                    <!-- Cerc cu prima literă a numelui angajatului -->
+                    <!-- Employee circle -->
                     <Border x:Name="EmployeeCircle"
                             Grid.Column="0">
                         <TextBlock Text="{Binding LoggedEmployee.Username, Converter={StaticResource FirstCharConverter}}"
@@ -170,7 +185,7 @@
                                    VerticalAlignment="Center" />
                     </Border>
 
-                    <!-- Numele angajatului logat -->
+                    <!-- Employee name -->
                     <TextBlock x:Name="EmployeeName"
                                Grid.Column="1"
                                Text="{Binding LoggedEmployee.Username}" />
@@ -182,7 +197,7 @@
                             BorderBrush="#e0e0e0"
                             BorderThickness="1"
                             CornerRadius="4"
-                            Margin="10, 0, 0, 0"
+                            Margin="10,0,0,0"
                             Padding="10"
                             VerticalAlignment="Center"
                             Click="LogoutButton_Click">
@@ -245,141 +260,7 @@
 
                 <!-- Main content -->
                 <Border Grid.Row="1" Padding="20">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="*"/>
-                        </Grid.RowDefinitions>
-
-                        <!-- Header -->
-                        <TextBlock Text="Shows" 
-                                   TextAlignment="Left"
-                                   FontSize="24"
-                                   FontWeight="Bold"
-                                   Margin="0, 0, 0, 20" />
-
-                        <!-- Modern ListBox -->
-                        <Border Grid.Row="1"
-                                Background="#ffffff"
-                                BorderBrush="#e0e0e0"
-                                BorderThickness="1"
-                                CornerRadius="8"
-                                >
-                            <ListBox ItemsSource="{Binding Shows}"
-                                    Background="Transparent"
-                                    BorderThickness="0"
-                                    Padding="8">
-                                <ListBox.ItemTemplate>
-                                    <DataTemplate>
-                                        <Border Background="#ffffff"
-                                                BorderBrush="#e0e0e0"
-                                                BorderThickness="1"
-                                                CornerRadius="6"
-                                                Padding="16"
-                                                Margin="0, 4"
-                                                BoxShadow="0 0 6 .2 #66000000">
-                                            <Grid>
-                                                <Grid.RowDefinitions>
-                                                    <RowDefinition Height="Auto"/>
-                                                    <RowDefinition Height="Auto"/>
-                                                    <RowDefinition Height="Auto"/>
-                                                </Grid.RowDefinitions>
-
-                                                <!-- Title and Artist -->
-                                                <Grid Grid.Row="0" Margin="0, 0, 0, 8">
-                                                    <Grid.ColumnDefinitions>
-                                                        <ColumnDefinition Width="*"/>
-                                                        <ColumnDefinition Width="Auto"/>
-                                                    </Grid.ColumnDefinitions>
-                                                    
-                                                    <StackPanel Grid.Column="0" Spacing="2">
-                                                        <TextBlock Text="{Binding Name}"
-                                                                 FontSize="18"
-                                                                 FontWeight="Bold"
-                                                                 Foreground="#1a1a1a"/>
-                                                        <TextBlock Text="{Binding ArtistName}"
-                                                                 FontSize="14"
-                                                                 Foreground="#fcba56"/>
-                                                    </StackPanel>
-                                                    
-                                                    <Button Grid.Column="1"
-                                                            Background="#f5f5f5"
-                                                            Foreground="#1a1a1a"
-                                                            BorderThickness="0"
-                                                            CornerRadius="4"
-                                                            Padding="8, 4"
-                                                            VerticalAlignment="Center"
-                                                            Margin="8, 0, 0, 0">
-                                                        <TextBlock Text="View Details"/>
-                                                    </Button>
-                                                </Grid>
-
-                                                <!-- Date and Location -->
-                                                <Grid Grid.Row="1" Margin="0, 0, 0, 8">
-                                                    <Grid.ColumnDefinitions>
-                                                        <ColumnDefinition Width="Auto"/>
-                                                        <ColumnDefinition Width="*"/>
-                                                    </Grid.ColumnDefinitions>
-                                                    
-                                                    <StackPanel Grid.Column="0" 
-                                                              Orientation="Horizontal" 
-                                                              Spacing="16">
-                                                        <StackPanel Orientation="Horizontal" Spacing="4">
-                                                            <TextBlock Text="Date:"
-                                                                     FontSize="14"
-                                                                     Foreground="#666666"/>
-                                                            <TextBlock Text="{Binding Date, StringFormat='{}{0:MMM dd, yyyy HH:mm}'}"
-                                                                     FontSize="14"
-                                                                     Foreground="#1a1a1a"/>
-                                                        </StackPanel>
-                                                        
-                                                        <StackPanel Orientation="Horizontal" Spacing="4">
-                                                            <TextBlock Text="Location:"
-                                                                     FontSize="14"
-                                                                     Foreground="#666666"/>
-                                                            <TextBlock Text="{Binding Location}"
-                                                                     FontSize="14"
-                                                                     Foreground="#1a1a1a"/>
-                                                        </StackPanel>
-                                                    </StackPanel>
-                                                </Grid>
-
-                                                <!-- Seats Information -->
-                                                <Grid Grid.Row="2">
-                                                    <Grid.ColumnDefinitions>
-                                                        <ColumnDefinition Width="Auto"/>
-                                                        <ColumnDefinition Width="*"/>
-                                                    </Grid.ColumnDefinitions>
-                                                    
-                                                    <StackPanel Grid.Column="0" 
-                                                              Orientation="Horizontal" 
-                                                              Spacing="16">
-                                                        <StackPanel Orientation="Horizontal" Spacing="4">
-                                                            <TextBlock Text="Available:"
-                                                                     FontSize="14"
-                                                                     Foreground="#666666"/>
-                                                            <TextBlock Text="{Binding AvailableSeats}"
-                                                                     FontSize="14"
-                                                                     Foreground="#acc963"/>
-                                                        </StackPanel>
-                                                        
-                                                        <StackPanel Orientation="Horizontal" Spacing="4">
-                                                            <TextBlock Text="Sold:"
-                                                                     FontSize="14"
-                                                                     Foreground="#666666"/>
-                                                            <TextBlock Text="{Binding SoldSeats}"
-                                                                     FontSize="14"
-                                                                     Foreground="#ba4e38"/>
-                                                        </StackPanel>
-                                                    </StackPanel>
-                                                </Grid>
-                                            </Grid>
-                                        </Border>
-                                    </DataTemplate>
-                                </ListBox.ItemTemplate>
-                            </ListBox>
-                        </Border>
-                    </Grid>
+                    <ContentControl Content="{Binding CurrentView}" />
                 </Border>
             </Grid>
         </Border>

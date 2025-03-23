@@ -1,0 +1,166 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:festival_muzica_avalonia.ViewModels"
+             xmlns:models="clr-namespace:festival_muzica_avalonia.Models"
+             x:Class="festival_muzica_avalonia.Views.ShowsByArtistTimeView"
+             x:DataType="vm:ShowsArtistTimeModel">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <TextBlock Text="Shows by Artist and Time" 
+                   TextAlignment="Left"
+                   FontSize="24"
+                   FontWeight="Bold"
+                   Margin="0, 0, 0, 20" />
+
+        <!-- No Results Message -->
+        <Border Grid.Row="1"
+                Background="#ffffff"
+                BorderBrush="#e0e0e0"
+                BorderThickness="1"
+                CornerRadius="8"
+                IsVisible="{Binding !Shows.Count}">
+            <StackPanel Orientation="Vertical"
+                        Spacing="10"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center">
+                <TextBlock Text="No results."
+                           FontSize="20"
+                           FontWeight="Bold"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center" /> 
+                <TextBlock Text="Update the searching data."
+                           FontSize="14"
+                           Foreground="#666666"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center" />
+            </StackPanel>
+        </Border>
+
+        <!-- Modern ListBox -->
+        <Border Grid.Row="1"
+                Background="#ffffff"
+                BorderBrush="#e0e0e0"
+                BorderThickness="1"
+                CornerRadius="8"
+                IsVisible="{Binding Shows.Count}">
+            <ListBox ItemsSource="{Binding Shows}"
+                    Background="Transparent"
+                    BorderThickness="0"
+                    Padding="8">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Border Background="#ffffff"
+                                BorderBrush="#e0e0e0"
+                                BorderThickness="1"
+                                CornerRadius="6"
+                                Padding="16"
+                                Margin="0, 4"
+                                BoxShadow="0 0 6 .2 #66000000">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <!-- Title and Artist -->
+                                <Grid Grid.Row="0" Margin="0, 0, 0, 8">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    
+                                    <StackPanel Grid.Column="0" Spacing="2">
+                                        <TextBlock Text="{Binding Name}"
+                                                 FontSize="18"
+                                                 FontWeight="Bold"
+                                                 Foreground="#1a1a1a"/>
+                                        <TextBlock Text="{Binding ArtistName}"
+                                                 FontSize="14"
+                                                 Foreground="#fcba56"/>
+                                    </StackPanel>
+                                    
+                                    <Button Grid.Column="1"
+                                            Background="#f5f5f5"
+                                            Foreground="#1a1a1a"
+                                            BorderThickness="0"
+                                            CornerRadius="4"
+                                            Padding="8, 4"
+                                            VerticalAlignment="Center"
+                                            Margin="8, 0, 0, 0">
+                                        <TextBlock Text="View Details"/>
+                                    </Button>
+                                </Grid>
+
+                                <!-- Date and Location -->
+                                <Grid Grid.Row="1" Margin="0, 0, 0, 8">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    
+                                    <StackPanel Grid.Column="0" 
+                                              Orientation="Horizontal" 
+                                              Spacing="16">
+                                        <StackPanel Orientation="Horizontal" Spacing="4">
+                                            <TextBlock Text="Date:"
+                                                     FontSize="14"
+                                                     Foreground="#666666"/>
+                                            <TextBlock Text="{Binding Date, StringFormat='{}{0:MMM dd, yyyy HH:mm}'}"
+                                                     FontSize="14"
+                                                     Foreground="#1a1a1a"/>
+                                        </StackPanel>
+                                        
+                                        <StackPanel Orientation="Horizontal" Spacing="4">
+                                            <TextBlock Text="Location:"
+                                                     FontSize="14"
+                                                     Foreground="#666666"/>
+                                            <TextBlock Text="{Binding Location}"
+                                                     FontSize="14"
+                                                     Foreground="#1a1a1a"/>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Grid>
+
+                                <!-- Seats Information -->
+                                <Grid Grid.Row="2">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    
+                                    <StackPanel Grid.Column="0" 
+                                              Orientation="Horizontal" 
+                                              Spacing="16">
+                                        <StackPanel Orientation="Horizontal" Spacing="4">
+                                            <TextBlock Text="Available:"
+                                                     FontSize="14"
+                                                     Foreground="#666666"/>
+                                            <TextBlock Text="{Binding AvailableSeats}"
+                                                     FontSize="14"
+                                                     Foreground="#acc963"/>
+                                        </StackPanel>
+                                        
+                                        <StackPanel Orientation="Horizontal" Spacing="4">
+                                            <TextBlock Text="Sold:"
+                                                     FontSize="14"
+                                                     Foreground="#666666"/>
+                                            <TextBlock Text="{Binding SoldSeats}"
+                                                     FontSize="14"
+                                                     Foreground="#ba4e38"/>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Grid>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </Border>
+    </Grid>
+</UserControl> 

@@ -1,0 +1,129 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:festival_muzica_avalonia.ViewModels"
+             xmlns:models="clr-namespace:festival_muzica_avalonia.Models"
+             x:Class="festival_muzica_avalonia.Views.TicketsView"
+             x:DataType="vm:TicketsViewModel">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <TextBlock Text="Tickets"
+                   TextAlignment="Left"
+                   FontSize="24"
+                   FontWeight="Bold"
+                   Margin="0, 0, 0, 20" />
+        
+        <!-- Modern ListBox -->
+        <Border Grid.Row="1"
+                Background="#ffffff"
+                BorderBrush="#e0e0e0"
+                BorderThickness="1"
+                CornerRadius="8">
+            <ListBox ItemsSource="{Binding PaginatedItems}"
+                    Background="Transparent"
+                    BorderThickness="0"
+                    Padding="8">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Border Background="#ffffff"
+                                BorderBrush="#e0e0e0"
+                                BorderThickness="1"
+                                CornerRadius="6"
+                                Padding="16"
+                                Margin="0, 4"
+                                BoxShadow="0 0 6 .2 #66000000">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <!-- Title and Artist -->
+                                <Grid Grid.Row="0" Margin="0, 0, 0, 8">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <StackPanel Grid.Column="0" Spacing="2">
+                                        <TextBlock Text="{Binding ShowName}"
+                                                FontSize="18"
+                                                FontWeight="Bold"
+                                                TextTrimming="CharacterEllipsis"/>
+                                        <TextBlock Text="{Binding client.Name}"
+                                                FontSize="14"
+                                                TextTrimming="CharacterEllipsis"/>
+                                    </StackPanel>
+
+                                    <StackPanel Grid.Column="1" Spacing="2" Margin="8, 0, 0, 0">
+                                        <StackPanel Orientation="Horizontal" Spacing="4">
+                                            <TextBlock Text="Price:"
+                                                FontSize="14"
+                                                Foreground="#666666"/>
+                                            <TextBlock Text="{Binding Price}"
+                                                FontSize="14"
+                                                TextTrimming="CharacterEllipsis"/>
+                                        </StackPanel>
+
+                                        <StackPanel Orientation="Horizontal" Spacing="4">
+                                            <TextBlock Text="Number of Seats:"
+                                                FontSize="14"
+                                                Foreground="#666666"/>
+                                            <TextBlock Text="{Binding NumberOfSeats}"
+                                                FontSize="14"
+                                                TextTrimming="CharacterEllipsis"
+                                                Foreground="#ba4e38"/>
+                                        </StackPanel>
+                                    </StackPanel>
+
+                                    <StackPanel Orientation="Horizontal" Grid.Column="2" Margin="8, 0, 0, 0" HorizontalAlignment="Right">
+                                        <Image Source="/Assets/barcode.png" Height="80" Width="50" Stretch="Uniform"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </Border>
+
+        <!-- Pagination Controls -->
+        <StackPanel Grid.Row="2" 
+                    Orientation="Horizontal" 
+                    HorizontalAlignment="Center"
+                    Margin="0,20,0,0"
+                    Spacing="10">
+            <Button Content="Previous"
+                    Command="{Binding PreviousPageCommand}"
+                    IsEnabled="{Binding CanGoPrevious}"
+                    Background="#fcba56"
+                    Foreground="White"
+                    Padding="12,8"/>
+            <TextBlock VerticalAlignment="Center">
+                <Run Text="Page "/>
+                <Run Text="{Binding CurrentPage}"/>
+                <Run Text=" of "/>
+                <Run Text="{Binding TotalPages}"/>
+            </TextBlock>
+            <Button Content="Next"
+                    Command="{Binding NextPageCommand}"
+                    IsEnabled="{Binding CanGoNext}"
+                    Background="#fcba56"
+                    Foreground="White"
+                    Padding="12,8"/>
+        </StackPanel>            
+    </Grid>
+</UserControl>
+
+            
+            
+        
+        
+        
+        

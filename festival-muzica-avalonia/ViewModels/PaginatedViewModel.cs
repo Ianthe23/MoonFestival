@@ -10,6 +10,7 @@ namespace festival_muzica_avalonia.ViewModels
         private int _currentPage = 1;
         private int _itemsPerPage = 5;
         private int _totalPages;
+        private int _totalItems;
         private ObservableCollection<T> _items = new();
         private ObservableCollection<T> _paginatedItems = new();
         private RelayCommand? _nextPageCommand;
@@ -85,8 +86,23 @@ namespace festival_muzica_avalonia.ViewModels
                 {
                     _items = value;
                     OnPropertyChanged();
+                    TotalItems = _items.Count;
                     UpdateTotalPages();
                     UpdatePaginatedItems();
+                }
+            }
+        }
+
+        public int TotalItems
+        {
+            get => _totalItems;
+            set 
+            {
+                if (_totalItems != value)
+                {
+                    _totalItems = value;
+                    OnPropertyChanged();
+                    UpdateTotalPages();
                 }
             }
         }

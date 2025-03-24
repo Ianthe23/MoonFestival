@@ -82,7 +82,7 @@ namespace festival_muzica_avalonia.Repository
                         string username = dataReader.GetString(1);
                         string password = dataReader.GetString(2);
                         employees.Add(new Employee(id, username, password));
-                        log.InfoFormat("Found employee: {0}", employees[employees.Count - 1]);
+                        log.InfoFormat("Found employee with id: {0}", id);
                     }
                 }
             }
@@ -92,7 +92,7 @@ namespace festival_muzica_avalonia.Repository
 
         public Employee? Save(Employee entity)
         {
-            log.InfoFormat("Entering Save with entity: {0}", entity);
+            log.InfoFormat("Entering Save with id: {0}", entity.Id);
             IDbConnection con = DBUtils.getConnection(props);
             try
             {
@@ -102,13 +102,13 @@ namespace festival_muzica_avalonia.Repository
                     cmd.Parameters.Add(new SQLiteParameter("@username", entity.Username));
                     cmd.Parameters.Add(new SQLiteParameter("@password", entity.Password));
                     cmd.ExecuteNonQuery();
-                    log.InfoFormat("Exiting Save with entity: {0}", entity);
+                    log.InfoFormat("Exiting Save with id: {0}", entity.Id);
                     return entity;
                 }
             }
             catch (Exception e)
             {
-                log.ErrorFormat("Error saving entity: {0}", e.Message); 
+                log.ErrorFormat("Error saving entity with id: {0} and error: {1}", entity.Id, e.Message); 
                 throw;
             }
         }
@@ -130,14 +130,14 @@ namespace festival_muzica_avalonia.Repository
             }
             catch (Exception e)
             {
-                log.ErrorFormat("Error deleting entity: {0}", e.Message);
+                log.ErrorFormat("Error deleting entity with error: {0}", e.Message);
                 throw;
             }
         }
 
         public Employee? Update(Employee entity)
         {
-            log.InfoFormat("Entering Update with entity: {0}", entity);
+            log.InfoFormat("Entering Update with id: {0}", entity.Id);
             IDbConnection con = DBUtils.getConnection(props);
             try
             {
@@ -148,7 +148,7 @@ namespace festival_muzica_avalonia.Repository
                     cmd.Parameters.Add(new SQLiteParameter("@password", entity.Password));
                     cmd.Parameters.Add(new SQLiteParameter("@id", entity.Id));
                     cmd.ExecuteNonQuery();
-                    log.InfoFormat("Exiting Update with entity: {0}", entity);
+                    log.InfoFormat("Exiting Update with id: {0}", entity.Id);
                     return entity;
                 }
             }

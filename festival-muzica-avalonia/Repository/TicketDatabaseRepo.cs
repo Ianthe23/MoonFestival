@@ -20,7 +20,7 @@ namespace festival_muzica_avalonia.Repository
 
         public IEnumerable<Ticket> FindByShow(Show show)
         {
-            log.InfoFormat("Entering FindByShow with show: {0}", show);
+            log.InfoFormat("Entering FindByShow with id: {0}", show.Id);
             IDbConnection con = DBUtils.getConnection(props);
             IList<Ticket> tickets = new List<Ticket>();
             using (var cmd = con.CreateCommand())
@@ -47,13 +47,13 @@ namespace festival_muzica_avalonia.Repository
                     }
                 }
             }
-            log.InfoFormat("Exiting FindByShow with show: {0}", show);
+            log.InfoFormat("Exiting FindByShow with id: {0}", show.Id);
             return tickets;
         }
 
         public IEnumerable<Ticket> FindByClient(Client client)
         {
-            log.InfoFormat("Entering FindByClient with client: {0}", client);
+            log.InfoFormat("Entering FindByClient with id: {0}", client.Id);
             IDbConnection con = DBUtils.getConnection(props);
             IList<Ticket> tickets = new List<Ticket>();
             using (var cmd = con.CreateCommand())
@@ -80,13 +80,13 @@ namespace festival_muzica_avalonia.Repository
                     }
                 }
             }
-            log.InfoFormat("Exiting FindByClient with client: {0}", client);
+            log.InfoFormat("Exiting FindByClient with id: {0}", client.Id);
             return tickets;
         }
 
         public IEnumerable<Ticket> FindByShowAndClient(Show show, Client client)
         {
-            log.InfoFormat("Entering FindByShowAndClient with show: {0} and client: {1}", show, client);
+            log.InfoFormat("Entering FindByShowAndClient with id: {0} and id: {1}", show.Id, client.Id);
             IDbConnection con = DBUtils.getConnection(props);
             IList<Ticket> tickets = new List<Ticket>();
             using (var cmd = con.CreateCommand())
@@ -114,7 +114,7 @@ namespace festival_muzica_avalonia.Repository
                     }
                 }
             }
-            log.InfoFormat("Exiting FindByShowAndClient with show: {0} and client: {1}", show, client);
+            log.InfoFormat("Exiting FindByShowAndClient with id: {0} and id: {1}", show.Id, client.Id);
             return tickets; 
         }
 
@@ -174,7 +174,7 @@ namespace festival_muzica_avalonia.Repository
                         int numberOfSeats = dataReader.GetInt32(5);
                         int price = dataReader.GetInt32(6);
                         tickets.Add(new Ticket(id, showId, showName, new Client(clientId, clientName), numberOfSeats, price));
-                        log.InfoFormat("Found ticket: {0}", tickets[tickets.Count - 1]);
+                        log.InfoFormat("Found ticket with id: {0}", id);
                     }
                 }
             }
@@ -184,7 +184,7 @@ namespace festival_muzica_avalonia.Repository
 
         public Ticket? Save(Ticket entity)
         {
-            log.InfoFormat("Entering Save with entity: {0}", entity);
+            log.InfoFormat("Entering Save with id: {0}", entity.Id);
             IDbConnection con = DBUtils.getConnection(props);
             try
             {
@@ -199,13 +199,13 @@ namespace festival_muzica_avalonia.Repository
                     cmd.Parameters.Add(new SQLiteParameter("@numberOfSeats", entity.NumberOfSeats));
                     cmd.Parameters.Add(new SQLiteParameter("@price", entity.Price));
                     cmd.ExecuteNonQuery();  
-                    log.InfoFormat("Exiting Save with entity: {0}", entity);
+                    log.InfoFormat("Exiting Save with id: {0}", entity.Id);
                     return entity;
                 }
             }
             catch (Exception e)
             {
-                log.ErrorFormat("Error saving entity: {0}", e.Message);
+                log.ErrorFormat("Error saving entity with id: {0} and error: {1}", entity.Id, e.Message);
                 throw;
             }
         }
@@ -229,14 +229,14 @@ namespace festival_muzica_avalonia.Repository
             }
             catch (Exception e)
             {
-                log.ErrorFormat("Error deleting entity: {0}", e.Message);
+                log.ErrorFormat("Error deleting entity with id: {0} and error: {1}", id, e.Message);
                 throw;
             }   
         }
 
         public Ticket? Update(Ticket entity)
         {
-            log.InfoFormat("Entering Update with entity: {0}", entity);
+            log.InfoFormat("Entering Update with id: {0}", entity.Id);
             IDbConnection con = DBUtils.getConnection(props);
             try
             {
@@ -252,13 +252,13 @@ namespace festival_muzica_avalonia.Repository
                     cmd.Parameters.Add(new SQLiteParameter("@price", entity.Price));
                     cmd.Parameters.Add(new SQLiteParameter("@id", entity.Id));
                     cmd.ExecuteNonQuery();
-                    log.InfoFormat("Exiting Update with entity: {0}", entity);
+                    log.InfoFormat("Exiting Update with id: {0}", entity.Id);
                     return entity;
                 }
             }
             catch (Exception e)
             {
-                log.ErrorFormat("Error updating entity: {0}", e.Message);
+                log.ErrorFormat("Error updating entity with id: {0} and error: {1}", entity.Id, e.Message);
                 throw;
             }
         }

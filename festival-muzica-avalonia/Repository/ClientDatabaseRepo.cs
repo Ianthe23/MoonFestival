@@ -128,7 +128,7 @@ namespace festival_muzica_avalonia.Repository
 
         public Client? Update(Client entity)
         {
-            log.InfoFormat("Entering Update");
+            log.InfoFormat("Entering Update with id: {0}", entity.Id);
             IDbConnection con = DBUtils.getConnection(props);
             try 
             {
@@ -138,7 +138,7 @@ namespace festival_muzica_avalonia.Repository
                     cmd.Parameters.Add(new SQLiteParameter("@name", entity.Name));
                     cmd.Parameters.Add(new SQLiteParameter("@id", entity.Id));
                     cmd.ExecuteNonQuery();
-                    log.InfoFormat("Exiting Update");
+                    log.InfoFormat("Exiting Update with id: {0}", entity.Id);
                     return entity;
                 }
             }

@@ -10,6 +10,7 @@ public class ClientsViewModel : PaginatedViewModel<Client>
 
     public ClientsViewModel(ServiceFestival service)
     {
+        ItemsPerPage = 7;
         _service = service;
         LoadClients();
     }

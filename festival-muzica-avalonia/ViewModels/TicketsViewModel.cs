@@ -11,6 +11,7 @@ namespace festival_muzica_avalonia.ViewModels
 
         public TicketsViewModel(ServiceFestival service)
         {
+            ItemsPerPage = 4;
             _service = service;
             LoadTickets();
         }

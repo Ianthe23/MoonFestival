@@ -1,6 +1,6 @@
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
-
+using festival_muzica_avalonia.ViewModels;
 
 namespace festival_muzica_avalonia.Views
 {
@@ -11,7 +11,7 @@ namespace festival_muzica_avalonia.Views
             InitializeComponent();
             if (Design.IsDesignMode)
                 return;
-
+        
         }
     }
 } 

@@ -2,10 +2,11 @@ using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Input;
+using ReactiveUI;
 
 namespace festival_muzica_avalonia.ViewModels
 {
-    public abstract class PaginatedViewModel<T> : BaseViewModel
+    public abstract class PaginatedViewModel<T> : ReactiveObject
     {
         private int _currentPage = 1;
         private int _itemsPerPage = 5;
@@ -24,10 +25,10 @@ namespace festival_muzica_avalonia.ViewModels
                 if (_currentPage != value)
                 {
                     _currentPage = value;
-                    OnPropertyChanged();
+                    this.RaisePropertyChanged();
                     UpdatePaginatedItems();
-                    OnPropertyChanged(nameof(CanGoNext));
-                    OnPropertyChanged(nameof(CanGoPrevious));
+                    this.RaisePropertyChanged(nameof(CanGoNext));
+                    this.RaisePropertyChanged(nameof(CanGoPrevious));
                     _nextPageCommand?.RaiseCanExecuteChanged();
                     _previousPageCommand?.RaiseCanExecuteChanged();
                 }
@@ -42,7 +43,7 @@ namespace festival_muzica_avalonia.ViewModels
                 if (_itemsPerPage != value)
                 {
                     _itemsPerPage = value;
-                    OnPropertyChanged();
+                    this.RaisePropertyChanged();
                     UpdateTotalPages();
                     UpdatePaginatedItems();
                 }
@@ -57,9 +58,9 @@ namespace festival_muzica_avalonia.ViewModels
                 if (_totalPages != value)
                 {
                     _totalPages = value;
-                    OnPropertyChanged();
-                    OnPropertyChanged(nameof(CanGoNext));
-                    OnPropertyChanged(nameof(CanGoPrevious));
+                    this.RaisePropertyChanged();
+                    this.RaisePropertyChanged(nameof(CanGoNext));
+                    this.RaisePropertyChanged(nameof(CanGoPrevious));
                 }
             }
         }
@@ -72,7 +73,7 @@ namespace festival_muzica_avalonia.ViewModels
                 if (_paginatedItems != value)
                 {
                     _paginatedItems = value;
-                    OnPropertyChanged();
+                    this.RaisePropertyChanged();
                 }
             }
         }
@@ -85,7 +86,7 @@ namespace festival_muzica_avalonia.ViewModels
                 if (_items != value)
                 {
                     _items = value;
-                    OnPropertyChanged();
+                    this.RaisePropertyChanged();
                     TotalItems = _items.Count;
                     UpdateTotalPages();
                     UpdatePaginatedItems();
@@ -101,7 +102,7 @@ namespace festival_muzica_avalonia.ViewModels
                 if (_totalItems != value)
                 {
                     _totalItems = value;
-                    OnPropertyChanged();
+                    this.RaisePropertyChanged();
                     UpdateTotalPages();
                 }
             }

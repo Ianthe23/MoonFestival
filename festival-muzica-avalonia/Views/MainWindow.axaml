@@ -6,9 +6,10 @@
         xmlns:dataGrid="clr-namespace:Avalonia.Controls.DataGrid;assembly=Avalonia.Controls.DataGrid"
         x:Class="festival_muzica_avalonia.MainWindow"
         x:DataType="vm:MainWindowViewModel"
-        Title="Festival Muzica"
-        Width="800"
-        Height="600"
+        Title="Festival Manager"
+        SizeToContent="Width"
+        MinWidth="800"
+        MinHeight="600"
         WindowStartupLocation="CenterScreen"
         Background="#ffffff">
     <Window.Resources>

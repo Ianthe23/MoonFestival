@@ -1,0 +1,20 @@
+<Application xmlns="https://github.com/avaloniaui"
+             x:Class="FestivalMuzica.Client.App"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="using:festival_muzica_avalonia"
+             RequestedThemeVariant="Light">
+             <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
+
+    <Application.Styles>
+        <FluentTheme />
+        <Style Selector="TextBlock">
+            <Setter Property="FontFamily" Value="Inter"/>
+        </Style>
+        <Style Selector="TextBox">
+            <Setter Property="FontFamily" Value="Inter"/>
+        </Style>
+        <Style Selector="Button">
+            <Setter Property="FontFamily" Value="Inter"/>
+        </Style>
+    </Application.Styles>
+</Application>

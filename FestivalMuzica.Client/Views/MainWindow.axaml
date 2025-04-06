@@ -1,0 +1,269 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:FestivalMuzica.Client.ViewModels"
+        xmlns:conv="clr-namespace:FestivalMuzica.Client.Converters"
+        xmlns:models="clr-namespace:FestivalMuzica.Common.Models"
+        xmlns:dataGrid="clr-namespace:Avalonia.Controls.DataGrid;assembly=Avalonia.Controls.DataGrid"
+        x:Class="FestivalMuzica.Client.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Title="Festival Muzica"
+        Width="1200"
+        Height="800"
+        MinWidth="800"
+        MinHeight="600"
+        WindowStartupLocation="CenterScreen"
+        Background="#ffffff"
+        ExtendClientAreaToDecorationsHint="False"
+        CanResize="True"
+        WindowState="Normal"
+        ShowInTaskbar="True">
+    <Window.Resources>
+        <!-- Register the converter -->
+        <conv:FirstCharConverter x:Key="FirstCharConverter" />
+    </Window.Resources>
+
+    <Window.Styles>
+        <!-- Define a style for Expander headers -->
+        <Style Selector="Expander /template/ ToggleButton#PART_ExpanderToggle">
+            <Setter Property="FontSize" Value="16" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="Foreground" Value="#1a1a1a" /> <!-- Dark gray text -->
+            <Setter Property="Padding" Value="10" />
+        </Style>
+
+        <!-- Define a style for TextBox and ComboBox -->
+        <Style Selector="TextBox, ComboBox">
+            <Setter Property="Background" Value="#f5f5f5" /> <!-- Light gray background -->
+            <Setter Property="Foreground" Value="#1a1a1a" /> <!-- Dark gray text -->
+            <Setter Property="BorderBrush" Value="#e0e0e0" /> <!-- Light gray border -->
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Padding" Value="8" />
+            <Setter Property="CornerRadius" Value="4" /> <!-- Rounded corners -->
+        </Style>
+
+        <!-- Define a style for the employee circle -->
+        <Style Selector="Border#EmployeeCircle">
+            <Setter Property="Background" Value="#fcba56" /> <!-- Orange background -->
+            <Setter Property="CornerRadius" Value="20" /> <!-- Fully rounded -->
+            <Setter Property="Width" Value="40" />
+            <Setter Property="Height" Value="40" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Margin" Value="0, 0, 10, 0" />
+        </Style>
+
+        <!-- Define a style for the employee name -->
+        <Style Selector="TextBlock#EmployeeName">
+            <Setter Property="FontSize" Value="16" />
+            <Setter Property="Foreground" Value="#1a1a1a" /> <!-- Dark gray text -->
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+    </Window.Styles>
+
+    <Grid>
+        <!-- Definim coloanele: una pentru Sidebar și una pentru conținutul principal -->
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="240" /> <!-- Sidebar -->
+            <ColumnDefinition Width="*" />   <!-- Conținut principal -->
+        </Grid.ColumnDefinitions>
+
+        <!-- Sidebar -->
+        <Border Grid.Column="0"
+                Background="#ffffff" 
+                Padding="10"
+                BorderBrush="#e0e0e0" 
+                BorderThickness="0, 0, 1, 0"> <!-- Right border only -->
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" /> <!-- Logo and app name -->
+                    <RowDefinition Height="*" /> <!-- Expandable sections -->
+                    <RowDefinition Height="Auto" /> <!-- Separator -->
+                    <RowDefinition Height="Auto" /> <!-- Employee info -->
+                </Grid.RowDefinitions>
+
+                <!-- Logo-ul aplicatiei si numele aplicatiei -->
+                <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="10" Margin="0,0,0,15">
+                    <Image Source="avares://FestivalMuzica.Client/Assets/festival.png" Width="40" Height="40" />
+                    <StackPanel Orientation="Vertical" Spacing="0">
+                        <TextBlock Text="MusicMoon" FontSize="16" FontWeight="Bold" />
+                        <TextBlock Text="Festival" FontSize="12" />
+                    </StackPanel>
+                </StackPanel>
+
+                <!-- Main content of sidebar -->
+                <StackPanel Grid.Row="1" Spacing="10">
+                    <!-- First expandable section -->
+                    <Expander Header="Search details" 
+                              Background="#ffffff"
+                              Padding="10"
+                              HorizontalAlignment="Stretch">
+                        <StackPanel Spacing="10">
+                            <TextBox Text="{Binding Artist}"
+                                     Watermark="Enter the name of the artist"
+                                     Background="#f5f5f5"
+                                     Padding="8" />
+                            <TextBox Text="{Binding Time}"
+                                     Watermark="Enter the date"
+                                     Background="#f5f5f5"
+                                     Padding="8" />
+                            <Button Content="Search"
+                                    Background="#fcba56"
+                                    Foreground="#ffffff"
+                                    BorderBrush="#e0e0e0"
+                                    BorderThickness="1"
+                                    CornerRadius="4"
+                                    Padding="8"
+                                    VerticalAlignment="Center"
+                                    HorizontalAlignment="Right"
+                                    Click="SearchButton_Click"/>
+                        </StackPanel>
+                    </Expander>
+
+                    <!-- Second expandable section -->
+                    <Expander Header="Sell ticket"
+                              Background="#ffffff"
+                              Padding="10"
+                              HorizontalAlignment="Stretch">
+                        <StackPanel Spacing="10">
+                            <ComboBox x:Name="ShowsComboBox"
+                                     PlaceholderText="Select the show"
+                                     Background="#f5f5f5"
+                                     Padding="8"
+                                     HorizontalAlignment="Stretch" />
+                            <TextBox Text="{Binding ClientName}"
+                                     Watermark="Enter the client's name"
+                                     Background="#f5f5f5"
+                                     Padding="8" />
+                            <TextBox Text="{Binding NumberOfSeats}"
+                                     Watermark="Enter the number of seats"
+                                     Background="#f5f5f5"
+                                     Padding="8" />
+                            <Button Content="Sell"
+                                    Background="#fcba56"
+                                    Foreground="#ffffff"
+                                    BorderBrush="#e0e0e0"
+                                    BorderThickness="1"
+                                    CornerRadius="4"
+                                    Padding="8"
+                                    VerticalAlignment="Center"
+                                    HorizontalAlignment="Right"
+                                    Click="SellButton_Click">
+                                <StackPanel Orientation="Horizontal" Spacing="5">
+                                    <TextBlock Text="Sell"
+                                               FontSize="16"
+                                               Foreground="#ffffff"
+                                               VerticalAlignment="Center"
+                                               HorizontalAlignment="Center" />
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
+                    </Expander>
+                </StackPanel>
+
+                <!-- Separator -->
+                <Border Grid.Row="2"
+                        Height="1"
+                        Background="#e0e0e0"
+                        Margin="-10,10,-10,10" />
+
+                <!-- Employee info at bottom -->
+                <Grid Grid.Row="3" 
+                      Margin="0,0,0,10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Employee circle -->
+                    <Border x:Name="EmployeeCircle"
+                            Grid.Column="0">
+                        <TextBlock Text="{Binding LoggedEmployee.Username, Converter={StaticResource FirstCharConverter}}"
+                                   FontSize="20"
+                                   Foreground="#ffffff" 
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center" />
+                    </Border>
+
+                    <!-- Employee name -->
+                    <TextBlock x:Name="EmployeeName"
+                               Grid.Column="1"
+                               Text="{Binding LoggedEmployee.Username}" />
+
+                    <!-- Logout button -->
+                    <Button Grid.Column="2"
+                            Background="#ffffff"
+                            Foreground="#ffffff"
+                            BorderBrush="#e0e0e0"
+                            BorderThickness="1"
+                            CornerRadius="4"
+                            Margin="10,0,0,0"
+                            Padding="10"
+                            VerticalAlignment="Center"
+                            Click="LogoutButton_Click">
+                        <StackPanel Orientation="Horizontal" Spacing="5">
+                            <Image Source="avares://FestivalMuzica.Client/Assets/logout.png" Width="20" Height="20" />
+                        </StackPanel>
+                    </Button>
+                </Grid>
+            </Grid>
+        </Border>
+
+        <!-- Conținutul principal al ferestrei -->
+        <Border Grid.Column="1"
+                Background="#ffffff">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <!-- Header -->
+                <Border Grid.Row="0"
+                        Background="#ffffff"
+                        BorderBrush="#e0e0e0"
+                        BorderThickness="0, 0, 0, 1"
+                        Padding="20, 0, 20, 20"
+                        Margin="0, 0, 0, 20">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Right side navigation -->
+                        <StackPanel Grid.Column="1" 
+                                  Orientation="Horizontal" 
+                                  Spacing="24"
+                                  VerticalAlignment="Center">
+                            <TextBlock Text="Shows"
+                                     FontSize="16"
+                                     Foreground="#666666"
+                                     Cursor="Hand"
+                                     Padding="0, 20, 0, 0"
+                                     PointerPressed="ShowsTextBlock_PointerPressed"/>
+                            <TextBlock Text="Tickets"
+                                     FontSize="16"
+                                     Foreground="#666666"
+                                     Cursor="Hand"
+                                     Padding="0, 20, 0, 0"
+                                     PointerPressed="TicketsTextBlock_PointerPressed"/>
+                            <TextBlock Text="Clients"
+                                     FontSize="16"
+                                     Foreground="#666666"
+                                     Cursor="Hand"
+                                     Padding="0, 20, 0, 0"
+                                     PointerPressed="ReportsTextBlock_PointerPressed"/>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <!-- Main content -->
+                <Border Grid.Row="1" Padding="20">
+                    <ContentControl Content="{Binding CurrentView}" />
+                </Border>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>

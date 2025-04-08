@@ -7,10 +7,7 @@ namespace FestivalMuzica.Server.Repository.Utils
 {
 	public static class DBUtils
 	{
-		
-
 		private static IDbConnection? instance = null;
-
 
 		public static IDbConnection getConnection(IDictionary<string,string> props)
 		{
@@ -24,10 +21,7 @@ namespace FestivalMuzica.Server.Repository.Utils
 
 		private static IDbConnection getNewConnection(IDictionary<string,string> props)
 		{
-			
 			return ConnectionFactory.getInstance().createConnection(props);
-
-
 		}
 	}
 }

@@ -105,6 +105,9 @@ internal class Program
                     signalRService.StartConnectionAsync().GetAwaiter().GetResult();
                     log.Info($"SignalR service connected to {host}:{signalRPort}");
                     
+                    // Flag to track if we've logged dispatcher status
+                    bool dispatcherStatusLogged = false;
+                    
                     // Forever loop to ensure refreshes happen
                     while (true) {
                         try {
@@ -117,28 +120,51 @@ internal class Program
                                 signalRService.RestartConnectionAsync().GetAwaiter().GetResult();
                             }
                             
-                            // Force data refresh from server
-                            stateService.ForceRefreshAll();
-                            log.Debug("Background refresh performed");
+                            // Check if the UI dispatcher is active
+                            var dispatcherActive = Avalonia.Threading.Dispatcher.UIThread.CheckAccess() || 
+                                                  Avalonia.Threading.Dispatcher.UIThread != null;
                             
-                            // Force UI update via dispatcher
-                            Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() => {
-                                stateService.NotifyAllDataChanged();
-                            }, Avalonia.Threading.DispatcherPriority.Background);
+                            // Log dispatcher status only once or when it changes
+                            if (!dispatcherStatusLogged) {
+                                log.Info($"UI Dispatcher status: {(dispatcherActive ? "Active" : "Inactive")}");
+                                dispatcherStatusLogged = true;
+                            }
+                            
+                            // Process UI updates with high priority
+                            var action = new Action(() => {
+                                try {
+                                    // Force data refresh from server
+                                    stateService.ForceRefreshAll();
+                                    log.Debug("Background refresh performed with high priority");
+                                    
+                                    // Explicitly notify all clients that data has changed with high priority
+                                    stateService.NotifyAllDataChanged();
+                                } 
+                                catch (Exception ex) {
+                                    log.Error($"Error in high priority background refresh: {ex.Message}");
+                                }
+                            });
+                            
+                            // Schedule with Send priority for immediate execution even in background
+                            if (Avalonia.Threading.Dispatcher.UIThread.CheckAccess()) {
+                                action();
+                            } else {
+                                // InvokeAsync returns void, not a task with a result we can check
+                                Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(action, 
+                                    Avalonia.Threading.DispatcherPriority.Send);
+                            }
                         }
                         catch (Exception ex) {
-                            log.Error($"Background refresh error: {ex.Message}");
-                            // Small delay before retry
-                            Thread.Sleep(1000);
+                            log.Error($"Error in background refresh: {ex.Message}");
                         }
                     }
                 }
                 catch (Exception ex) {
-                    log.Fatal($"Fatal error in background thread: {ex.Message}");
+                    log.Error($"Error in background thread: {ex.Message}");
                 }
             });
-
-            // Start it as a background thread so it doesn't prevent app exit
+            
+            // Start the background thread
             backgroundThread.IsBackground = true;
             backgroundThread.Start();
 

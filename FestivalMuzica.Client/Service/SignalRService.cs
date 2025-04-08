@@ -86,7 +86,17 @@ namespace FestivalMuzica.Client.Service
                 {
                     try {
                         Console.WriteLine($"[RECEIVED] SignalR event: Show updated - {show.Name} (Available: {show.AvailableSeats}, Sold: {show.SoldSeats})");
-                        OnShowUpdated?.Invoke(show);
+                        
+                        // Schedule the event handler with Background priority to ensure it runs even when app is not focused
+                        Task.Run(() => {
+                            try {
+                                OnShowUpdated?.Invoke(show);
+                                Console.WriteLine($"[PROCESSED] Show update for {show.Name} processed successfully");
+                            }
+                            catch (Exception ex) {
+                                Console.WriteLine($"Error in background processing of ShowUpdated: {ex.Message}");
+                            }
+                        });
                     }
                     catch (Exception ex) {
                         Console.WriteLine($"Error handling ShowUpdated event: {ex.Message}");
@@ -97,7 +107,17 @@ namespace FestivalMuzica.Client.Service
                 {
                     try {
                         Console.WriteLine($"[RECEIVED] SignalR event: Ticket sold for show: {ticket.ShowName}");
-                        OnTicketSold?.Invoke(ticket);
+                        
+                        // Schedule the event handler with Background priority to ensure it runs even when app is not focused
+                        Task.Run(() => {
+                            try {
+                                OnTicketSold?.Invoke(ticket);
+                                Console.WriteLine($"[PROCESSED] Ticket sale for {ticket.ShowName} processed successfully");
+                            }
+                            catch (Exception ex) {
+                                Console.WriteLine($"Error in background processing of TicketSold: {ex.Message}");
+                            }
+                        });
                     }
                     catch (Exception ex) {
                         Console.WriteLine($"Error handling TicketSold event: {ex.Message}");
@@ -108,7 +128,17 @@ namespace FestivalMuzica.Client.Service
                 {
                     try {
                         Console.WriteLine($"[RECEIVED] SignalR event: Client added: {client.Name}");
-                        OnClientAdded?.Invoke(client);
+                        
+                        // Schedule the event handler with Background priority to ensure it runs even when app is not focused
+                        Task.Run(() => {
+                            try {
+                                OnClientAdded?.Invoke(client);
+                                Console.WriteLine($"[PROCESSED] Client addition for {client.Name} processed successfully");
+                            }
+                            catch (Exception ex) {
+                                Console.WriteLine($"Error in background processing of ClientAdded: {ex.Message}");
+                            }
+                        });
                     }
                     catch (Exception ex) {
                         Console.WriteLine($"Error handling ClientAdded event: {ex.Message}");
@@ -120,7 +150,17 @@ namespace FestivalMuzica.Client.Service
                     try {
                         Console.WriteLine($"[CONNECTED] Connected to hub with ID: {connectionId}");
                         _isConnected = true;
-                        OnConnected?.Invoke(connectionId);
+                        
+                        // Process connection event in background
+                        Task.Run(() => {
+                            try {
+                                OnConnected?.Invoke(connectionId);
+                                Console.WriteLine($"[PROCESSED] Connection with ID {connectionId} processed successfully");
+                            }
+                            catch (Exception ex) {
+                                Console.WriteLine($"Error in background processing of Connected: {ex.Message}");
+                            }
+                        });
                     }
                     catch (Exception ex) {
                         Console.WriteLine($"Error handling Connected event: {ex.Message}");
@@ -132,20 +172,27 @@ namespace FestivalMuzica.Client.Service
                     try {
                         Console.WriteLine($"[DISCONNECTED] Connection closed. Error: {error?.Message}");
                         _isConnected = false;
-                        OnDisconnected?.Invoke();
                         
-                        // Try to reconnect outside the event handler to avoid deadlocks
-                        _ = Task.Run(async () =>
-                        {
-                            await Task.Delay(1000); // Wait 1 second before reconnecting
-                            try
-                            {
-                                Console.WriteLine("[RECONNECTING] Attempting to reconnect after disconnection");
-                                await StartConnectionAsync();
+                        // Process disconnection event in background
+                        Task.Run(() => {
+                            try {
+                                OnDisconnected?.Invoke();
+                                Console.WriteLine("[PROCESSED] Disconnection processed successfully");
+                                
+                                // Try to reconnect outside the event handler to avoid deadlocks
+                                Thread.Sleep(1000); // Wait 1 second before reconnecting
+                                try
+                                {
+                                    Console.WriteLine("[RECONNECTING] Attempting to reconnect after disconnection");
+                                    StartConnectionAsync().GetAwaiter().GetResult();
+                                }
+                                catch (Exception ex)
+                                {
+                                    Console.WriteLine($"Error reconnecting: {ex.Message}");
+                                }
                             }
-                            catch (Exception ex)
-                            {
-                                Console.WriteLine($"Error reconnecting: {ex.Message}");
+                            catch (Exception ex) {
+                                Console.WriteLine($"Error in background processing of Disconnected: {ex.Message}");
                             }
                         });
                     }

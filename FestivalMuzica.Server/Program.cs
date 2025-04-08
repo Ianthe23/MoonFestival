@@ -98,6 +98,14 @@ namespace FestivalMuzica.Server
                         {
                             services.AddSignalR();
                             
+                            // Add logging for the web host
+                            services.AddLogging(configure => 
+                            {
+                                configure.AddConsole();
+                                configure.AddDebug();
+                                configure.SetMinimumLevel(LogLevel.Debug); // Set to Debug to see all logs
+                            });
+                            
                             // Share the same service instances with the web host
                             services.AddSingleton(tcpServiceProvider.GetRequiredService<IEmployeeRepo>());
                             services.AddSingleton(tcpServiceProvider.GetRequiredService<IClientRepo>());

@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Linq;
 using FestivalMuzica.Common.Models;
 using Avalonia.Threading;
+using System.Threading.Tasks;
 
 namespace FestivalMuzica.Client.Service
 {
@@ -139,79 +140,144 @@ namespace FestivalMuzica.Client.Service
         {
             Console.WriteLine($"SignalR notification received: Show updated - {updatedShow.Name} (Available: {updatedShow.AvailableSeats}, Sold: {updatedShow.SoldSeats})");
             
-            // First, update the show directly for immediate UI update
-            UpdateShowDirectly(updatedShow);
-            
-            // Use background priority to update even when window is not in focus
-            Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() =>
-            {
+            // Use Task.Run to process the update in the background
+            Task.Run(() => {
                 try
                 {
-                    // For deeper changes, do a complete refresh of the collection
-                    Console.WriteLine("[BACKGROUND UPDATE] Performing full refresh of shows collection");
-                    RefreshShows();
+                    Console.WriteLine($"Background processing: Show update for {updatedShow.Name}");
                     
-                    // Force UI to update by notifying property changed
-                    OnPropertyChanged(nameof(Shows));
-                    
-                    // Broadcast to anyone listening to this collection
-                    NotifyAllDataChanged();
-                    
-                    Console.WriteLine($"[BACKGROUND UPDATE] Show update complete. Collection now has {_shows.Count} shows.");
+                    // Update the show directly in the collection without waiting for UI thread
+                    var existingShow = _shows.FirstOrDefault(s => s.Id == updatedShow.Id);
+                    if (existingShow != null)
+                    {
+                        // Schedule the UI update with high priority
+                        Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() => {
+                            try {
+                                // Update the existing show's properties
+                                existingShow.AvailableSeats = updatedShow.AvailableSeats;
+                                existingShow.SoldSeats = updatedShow.SoldSeats;
+                                existingShow.Name = updatedShow.Name;
+                                existingShow.ArtistName = updatedShow.ArtistName;
+                                existingShow.Date = updatedShow.Date;
+                                existingShow.Location = updatedShow.Location;
+                                
+                                // Force immediate update of the collection
+                                _shows.Remove(existingShow);
+                                _shows.Add(existingShow);
+                                
+                                // Notify that the collection has changed
+                                OnPropertyChanged(nameof(Shows));
+                                NotifyAllDataChanged();
+                                
+                                Console.WriteLine($"Show {updatedShow.Name} updated in UI successfully");
+                            }
+                            catch (Exception ex) {
+                                Console.WriteLine($"Error in UI dispatch for show update: {ex.Message}");
+                            }
+                        }, Avalonia.Threading.DispatcherPriority.Send);
+                    }
+                    else
+                    {
+                        // If show doesn't exist, add it with high priority
+                        Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() => {
+                            try {
+                                _shows.Add(updatedShow);
+                                OnPropertyChanged(nameof(Shows));
+                                NotifyAllDataChanged();
+                                Console.WriteLine($"Show {updatedShow.Name} added to UI successfully");
+                            }
+                            catch (Exception ex) {
+                                Console.WriteLine($"Error in UI dispatch for show add: {ex.Message}");
+                            }
+                        }, Avalonia.Threading.DispatcherPriority.Send);
+                    }
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"[BACKGROUND UPDATE] Error updating shows on SignalR notification: {ex.Message}");
+                    Console.WriteLine($"Error in background processing for show update: {ex.Message}");
                 }
-            }, Avalonia.Threading.DispatcherPriority.Background);
+            });
         }
 
         private void OnTicketSold(Ticket newTicket)
         {
             Console.WriteLine($"SignalR notification received: Ticket sold - {newTicket.ShowName}, Client: {newTicket.Client.Name}, Seats: {newTicket.NumberOfSeats}");
             
-            // Use background priority to update even when window is not in focus
-            Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() =>
-            {
-                try
-                {
-                    // Force a complete refresh of all data
-                    Console.WriteLine("[BACKGROUND UPDATE] Performing full refresh of ticket collection and related data");
-                    RefreshTickets();
-                    RefreshShows(); // Shows are affected by ticket sales (available seats)
+            // Process in background to ensure it works even when app is in background
+            Task.Run(() => {
+                try {
+                    Console.WriteLine($"Background processing: Ticket sold for {newTicket.ShowName}");
                     
-                    // Force UI to update
-                    OnPropertyChanged(nameof(Tickets));
-                    OnPropertyChanged(nameof(Shows));
-                    
-                    // Ticket sale affects multiple views, so notify all
-                    NotifyAllDataChanged();
-                    
-                    Console.WriteLine($"[BACKGROUND UPDATE] Ticket update complete. Collection now has {_tickets.Count} tickets.");
+                    // Use high priority to ensure UI updates even in background
+                    Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() => {
+                        try {
+                            // Add the new ticket to the collection
+                            _tickets.Add(newTicket);
+                            
+                            // Update the corresponding show's available seats
+                            var show = _shows.FirstOrDefault(s => s.Id == newTicket.ShowId);
+                            if (show != null)
+                            {
+                                show.AvailableSeats -= newTicket.NumberOfSeats;
+                                show.SoldSeats += newTicket.NumberOfSeats;
+                                
+                                // Force immediate update of the show in the collection
+                                _shows.Remove(show);
+                                _shows.Add(show);
+                            }
+                            
+                            // Notify UI of changes
+                            OnPropertyChanged(nameof(Tickets));
+                            OnPropertyChanged(nameof(Shows));
+                            NotifyAllDataChanged();
+                            
+                            Console.WriteLine($"Ticket sale for {newTicket.ShowName} processed in UI successfully");
+                        }
+                        catch (Exception ex) {
+                            Console.WriteLine($"Error in UI dispatch for ticket sale: {ex.Message}");
+                        }
+                    }, Avalonia.Threading.DispatcherPriority.Send);
                 }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"[BACKGROUND UPDATE] Error updating tickets on SignalR notification: {ex.Message}");
+                catch (Exception ex) {
+                    Console.WriteLine($"Error in background processing for ticket sale: {ex.Message}");
                 }
-            }, Avalonia.Threading.DispatcherPriority.Background);
+            });
         }
 
         private void OnClientAdded(FestivalMuzica.Common.Models.Client newClient)
         {
             Console.WriteLine($"SignalR notification received: Client added - {newClient.Name}");
-            Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() =>
-            {
-                // Check if client already exists
-                var existingClient = _clients.FirstOrDefault(c => c.Id == newClient.Id);
-                if (existingClient == null)
-                {
-                    Console.WriteLine($"Adding new client: {newClient.Name}");
-                    _clients.Add(newClient);
-                    OnPropertyChanged(nameof(Clients));
+            
+            // Process in background to ensure it works even when app is in background
+            Task.Run(() => {
+                try {
+                    Console.WriteLine($"Background processing: Client added {newClient.Name}");
+                    
+                    // Use high priority to ensure UI updates even in background
+                    Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() => {
+                        try {
+                            // Check if client already exists
+                            var existingClient = _clients.FirstOrDefault(c => c.Id == newClient.Id);
+                            if (existingClient == null)
+                            {
+                                Console.WriteLine($"Adding new client: {newClient.Name}");
+                                _clients.Add(newClient);
+                                OnPropertyChanged(nameof(Clients));
+                                NotifyAllDataChanged();
+                                Console.WriteLine($"Client {newClient.Name} added to UI successfully");
+                            }
+                            else
+                            {
+                                Console.WriteLine($"Client already exists: {newClient.Name}");
+                            }
+                        }
+                        catch (Exception ex) {
+                            Console.WriteLine($"Error in UI dispatch for client add: {ex.Message}");
+                        }
+                    }, Avalonia.Threading.DispatcherPriority.Send);
                 }
-                else
-                {
-                    Console.WriteLine($"Client already exists: {newClient.Name}");
+                catch (Exception ex) {
+                    Console.WriteLine($"Error in background processing for client add: {ex.Message}");
                 }
             });
         }
@@ -229,58 +295,6 @@ namespace FestivalMuzica.Client.Service
             OnPropertyChanged(nameof(Tickets));
             OnPropertyChanged(nameof(Clients));
         }
-
-        // Add this method to force UI updates by directly modifying the collection
-        public void UpdateShowDirectly(Show updatedShow)
-        {
-            Console.WriteLine($"[DIRECT UPDATE] Updating show directly: {updatedShow.Name}");
-            
-            Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() =>
-            {
-                try
-                {
-                    // Find the existing show in the collection
-                    var existingShow = _shows.FirstOrDefault(s => s.Id == updatedShow.Id);
-                    if (existingShow != null)
-                    {
-                        // Get the index and replace it directly
-                        int index = _shows.IndexOf(existingShow);
-                        
-                        // Make a clean copy to ensure it's treated as a new object
-                        var showCopy = new Show
-                        {
-                            Id = updatedShow.Id,
-                            Name = updatedShow.Name,
-                            ArtistName = updatedShow.ArtistName,
-                            Date = updatedShow.Date,
-                            Location = updatedShow.Location,
-                            AvailableSeats = updatedShow.AvailableSeats,
-                            SoldSeats = updatedShow.SoldSeats
-                        };
-                        
-                        // Replace the show in the collection
-                        _shows[index] = showCopy;
-                        
-                        Console.WriteLine($"[DIRECT UPDATE] Successfully replaced show at index {index}");
-                        
-                        // Force UI update by notifying property changed
-                        OnPropertyChanged(nameof(Shows));
-                    }
-                    else
-                    {
-                        // If show doesn't exist, add it
-                        _shows.Add(updatedShow);
-                        Console.WriteLine($"[DIRECT UPDATE] Added new show to collection");
-                        
-                        // Force UI update
-                        OnPropertyChanged(nameof(Shows));
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"[DIRECT UPDATE] Error updating show directly: {ex.Message}");
-                }
-            }, Avalonia.Threading.DispatcherPriority.Background);
-        }
+        
     }
 } 

@@ -137,9 +137,11 @@ namespace FestivalMuzica.Server.Hubs
                 }
                 
                 // Also force a show update for UI consistency
-                var show = new Show { 
-                    Id = ticket.ShowId, 
-                    Name = ticket.ShowName
+                var show = new Show
+                {
+                    Id = ticket.ShowId,
+                    Name = ticket.ShowName,
+
                 };
                 await BroadcastShowUpdate(show);
                 

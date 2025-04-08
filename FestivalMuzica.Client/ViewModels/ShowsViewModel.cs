@@ -41,32 +41,10 @@ namespace FestivalMuzica.Client.ViewModels
                 stateService.Shows.CollectionChanged += (sender, e) => 
                 {
                     Console.WriteLine($"ShowsViewModel: Direct shows collection changed notification received. Action: {e.Action}");
-                    Dispatcher.UIThread.InvokeAsync(() => 
-                    {
-                        LoadShows();
-                        this.RaisePropertyChanged(nameof(Items));
-                        this.RaisePropertyChanged(nameof(PaginatedItems));
-                    });
+                    LoadShows();
+                    this.RaisePropertyChanged(nameof(Items));
+                    this.RaisePropertyChanged(nameof(PaginatedItems));
                 };
-                
-                // Set up a refresh timer to force updates regardless of focus
-                var refreshTimer = new System.Timers.Timer(2000); // 2 second refresh
-                refreshTimer.Elapsed += (s, e) => {
-                    Dispatcher.UIThread.InvokeAsync(() => {
-                        try {
-                            Console.WriteLine("[SHOWS VIEWMODEL TIMER] Forcing refresh");
-                            LoadShows();
-                            FilterShows(SearchText);
-                            this.RaisePropertyChanged(nameof(Items));
-                            this.RaisePropertyChanged(nameof(PaginatedItems));
-                        }
-                        catch (Exception ex) {
-                            Console.WriteLine($"[SHOWS VIEWMODEL TIMER] Error: {ex.Message}");
-                        }
-                    });
-                };
-                refreshTimer.AutoReset = true;
-                refreshTimer.Start();
                 
                 // Initialize with current data
                 LoadShows();
@@ -93,40 +71,48 @@ namespace FestivalMuzica.Client.ViewModels
             {
                 Console.WriteLine("ShowsViewModel: State service notified shows collection changed");
                 
-                // Always update on UI thread with background priority
-                Dispatcher.UIThread.InvokeAsync(() =>
+                try
                 {
-                    try
-                    {
-                        Console.WriteLine("[BACKGROUND UPDATE] ShowsViewModel: Reloading shows");
-                        LoadShows();
-                        
-                        // THIS IS THE KEY CHANGE: Force refresh of the visible items after data has been updated
-                        FilterShows(SearchText); // Re-apply current filter to refresh displayed items
-                        Console.WriteLine($"[BACKGROUND UPDATE] ShowsViewModel: Shows reloaded and displayed, count: {_allShows.Count}");
-                        
-                        // Force the UI to refresh by raising change notifications
-                        this.RaisePropertyChanged(nameof(Items));
-                        this.RaisePropertyChanged(nameof(PaginatedItems));
-                        this.RaisePropertyChanged(nameof(TotalPages));
-                        
-                        // Important: Force refresh of any dependent bound properties
-                        foreach (var item in Items)
+                    // Use Send priority (highest) for immediate execution even when app is in background
+                    Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() => {
+                        try
                         {
-                            // Notify property changed for each item to update any bound properties
-                            if (item is INotifyPropertyChanged notifyItem)
+                            Console.WriteLine("ShowsViewModel: Forcing high-priority update for shows");
+                            
+                            // Get the latest shows from the state service
+                            var stateService = FestivalStateService.GetOrInitialize(_service, null);
+                            var shows = stateService.Shows.ToList();
+                            
+                            // Create a new collection to force UI update
+                            var newShows = new ObservableCollection<Show>();
+                            foreach (var show in shows)
                             {
-                                // Use reflection to force property changed notification on all properties
-                                typeof(INotifyPropertyChanged).GetMethod("OnPropertyChanged")?.Invoke(notifyItem, 
-                                    new object[] { new PropertyChangedEventArgs(string.Empty) });
+                                newShows.Add(show);
                             }
+                            
+                            // Replace the entire collection
+                            _allShows = newShows;
+                            
+                            // Re-apply current filter
+                            FilterShows(SearchText);
+                            
+                            // Force immediate UI update on render thread
+                            this.RaisePropertyChanged(nameof(Items));
+                            this.RaisePropertyChanged(nameof(PaginatedItems));
+                            this.RaisePropertyChanged(nameof(TotalPages));
+                            
+                            Console.WriteLine("ShowsViewModel: High-priority update completed successfully");
                         }
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine($"[BACKGROUND UPDATE] ShowsViewModel: Error reloading shows - {ex.Message}");
-                    }
-                }, Avalonia.Threading.DispatcherPriority.Background);
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"Error in high-priority update: {ex.Message}");
+                        }
+                    }, Avalonia.Threading.DispatcherPriority.Send);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error reloading shows: {ex.Message}");
+                }
             }
         }
 
@@ -203,6 +189,39 @@ namespace FestivalMuzica.Client.ViewModels
         protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        public void RefreshShows()
+        {
+            try
+            {
+                // Get shows from shared state instead of service directly
+                var stateService = FestivalStateService.GetOrInitialize(_service, null);
+                var shows = stateService.Shows.ToList();
+                
+                // Clear and rebuild the collection to force UI update
+                _allShows.Clear();
+                foreach (var show in shows)
+                {
+                    _allShows.Add(show);
+                }
+                
+                // Apply filtering
+                FilterShows(SearchText);
+                
+                // Force immediate UI update
+                this.RaisePropertyChanged(nameof(Items));
+                this.RaisePropertyChanged(nameof(PaginatedItems));
+                this.RaisePropertyChanged(nameof(TotalPages));
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error loading shows from state service: {ex.Message}");
+                // Fallback to direct loading
+                var shows = _service.getShows();
+                _allShows = new ObservableCollection<Show>(shows);
+                FilterShows(SearchText);
+            }
         }
     }
 } 

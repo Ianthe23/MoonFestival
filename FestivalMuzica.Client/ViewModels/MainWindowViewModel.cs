@@ -139,128 +139,36 @@ namespace FestivalMuzica.Client.ViewModels
             _signalRService = signalRService;
             LoggedEmployee = loggedEmployee;
             
-            // Initialize or get the shared state service
+            // Get or initialize the state service
             var stateService = FestivalStateService.GetOrInitialize(service, signalRService);
             
-            // When SignalR receives a ticket sold notification, update views
+            // Connect SignalR events directly to state service methods
             signalRService.OnTicketSold += ticket => {
-                Console.WriteLine($"[BACKGROUND UPDATE] Ticket sold notification received via SignalR: {ticket.ShowName}");
+                Console.WriteLine($"[CLIENT {LoggedEmployee?.Username}] Ticket sold notification received via SignalR: {ticket.ShowName}");
                 
-                // IMPORTANT: Use a lower priority dispatcher to ensure UI updates even when window is not focused
-                Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() => 
-                {
-                    try
-                    {
-                        Console.WriteLine("[BACKGROUND UPDATE] Refreshing views after ticket sale");
-                        
-                        // Create a new instance of each view model to force a complete refresh
-                        if (CurrentView is FestivalMuzica.Client.Views.ShowsView)
-                        {
-                            var newViewModel = new ShowsViewModel(_service);
-                            ((FestivalMuzica.Client.Views.ShowsView)CurrentView).DataContext = newViewModel;
-                            Console.WriteLine("[BACKGROUND UPDATE] Replaced ShowsView DataContext with new instance");
-                        }
-                        else if (CurrentView is FestivalMuzica.Client.Views.TicketsView)
-                        {
-                            var newViewModel = new TicketsViewModel(_service);
-                            ((FestivalMuzica.Client.Views.TicketsView)CurrentView).DataContext = newViewModel;
-                            Console.WriteLine("[BACKGROUND UPDATE] Replaced TicketsView DataContext with new instance");
-                        }
-                        
-                        // Force a refresh of the state service data
-                        var stateService = FestivalStateService.GetOrInitialize(_service, _signalRService);
-                        stateService.ForceRefreshAll();
-                        stateService.NotifyAllDataChanged();
-                        
-                        // Force property changed notifications on all view properties
-                        OnPropertyChanged(nameof(CurrentView));
-                        
-                        Console.WriteLine("[BACKGROUND UPDATE] View update complete");
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine($"[BACKGROUND UPDATE] Error updating views: {ex.Message}");
-                    }
-                }, Avalonia.Threading.DispatcherPriority.Background);
+                // Directly refresh the state - no need to check current view
+                stateService.RefreshShows();
+                stateService.RefreshTickets();
             };
             
-            // Set up a refresh timer to periodically update data regardless of window focus
-            // This is critical for ensuring updates happen even when the window isn't active
-            System.Timers.Timer refreshTimer = new System.Timers.Timer(5000); // 5 second refresh interval
-            refreshTimer.Elapsed += (s, e) => {
-                // Only refresh if SignalR is connected - otherwise we might be disconnected/offline
-                if (signalRService.IsConnected) {
-                    Console.WriteLine("[TIMER] Performing scheduled background refresh");
-                    
-                    // Invoke on UI thread at Background priority
-                    Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() => {
-                        try {
-                            // Force data refresh
-                            stateService.ForceRefreshAll();
-                            
-                            // Force UI update
-                            if (CurrentView is FestivalMuzica.Client.Views.ShowsView) {
-                                var newViewModel = new ShowsViewModel(_service);
-                                ((FestivalMuzica.Client.Views.ShowsView)CurrentView).DataContext = newViewModel;
-                            }
-                            
-                            // Force property changed for UI refresh
-                            OnPropertyChanged(nameof(CurrentView));
-                        }
-                        catch (Exception ex) {
-                            Console.WriteLine($"[TIMER] Error in refresh timer: {ex.Message}");
-                        }
-                    }, Avalonia.Threading.DispatcherPriority.Background);
-                }
-            };
-            
-            // Start the timer
-            refreshTimer.AutoReset = true;
-            refreshTimer.Start();
-            
-            // Add similar handler for show updates
             signalRService.OnShowUpdated += show => {
-                Console.WriteLine($"[BACKGROUND UPDATE] Show updated notification received via SignalR: {show.Name}");
+                Console.WriteLine($"[CLIENT {LoggedEmployee?.Username}] Show updated notification received via SignalR: {show.Name}");
                 
-                // Use background priority to update even when window isn't focused
-                Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() => 
-                {
-                    try 
-                    {
-                        Console.WriteLine("[BACKGROUND UPDATE] Refreshing views after show update");
-                        
-                        // Create a new instance of ShowsViewModel if we're on the shows view
-                        if (CurrentView is FestivalMuzica.Client.Views.ShowsView)
-                        {
-                            var newViewModel = new ShowsViewModel(_service);
-                            ((FestivalMuzica.Client.Views.ShowsView)CurrentView).DataContext = newViewModel;
-                            Console.WriteLine("[BACKGROUND UPDATE] Replaced ShowsView DataContext with new instance");
-                        }
-                        
-                        // Force data refresh
-                        var stateService = FestivalStateService.GetOrInitialize(_service, _signalRService);
-                        stateService.ForceRefreshAll();
-                        stateService.NotifyAllDataChanged();
-                        
-                        // Force property changed notifications
-                        OnPropertyChanged(nameof(CurrentView));
-                        
-                        Console.WriteLine("[BACKGROUND UPDATE] Show update complete");
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine($"[BACKGROUND UPDATE] Error updating views: {ex.Message}");
-                    }
-                }, Avalonia.Threading.DispatcherPriority.Background);
+                // Directly refresh the state - no need to check current view
+                stateService.RefreshShows();
             };
             
             // Set up ConnectionStatus updates from SignalR
             signalRService.OnConnected += _ => {
-                ConnectionStatus = "Connected";
+                Dispatcher.UIThread.Post(() => {
+                    ConnectionStatus = "Connected";
+                });
             };
             
             signalRService.OnDisconnected += () => {
-                ConnectionStatus = "Disconnected";
+                Dispatcher.UIThread.Post(() => {
+                    ConnectionStatus = "Disconnected";
+                });
             };
             
             // Start the connection

@@ -14,6 +14,10 @@ using FestivalMuzica.Client.ViewModels;
 using Avalonia.Input;
 using System.Linq;
 using System.Collections.ObjectModel;
+using Avalonia.Controls.Primitives;
+using System.Reactive.Linq;
+using Avalonia.Threading;
+using System.Threading;
 
 namespace FestivalMuzica.Client.Views
 {
@@ -82,39 +86,6 @@ namespace FestivalMuzica.Client.Views
                     
                     // Force activation/focus
                     this.Activate();
-                    
-                    // Set up a timer to keep refreshing the UI
-                    var timer = new System.Timers.Timer(2000); // 2-second refresh
-                    timer.Elapsed += (s, args) => {
-                        Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() => {
-                            // Force refresh of state service
-                            var stateService = FestivalStateService.GetOrInitialize(_serviceFestival, _signalRService);
-                            
-                            // Update window content
-                            if (!this.IsVisible) return;
-                            
-                            try {
-                                Console.WriteLine("[WINDOW TIMER] Forcing UI refresh");
-                                
-                                // Refresh data
-                                stateService.ForceRefreshAll();
-                                
-                                // Force redraw of current view
-                                if (DataContext is MainWindowViewModel viewModel)
-                                {
-                                    // Just a way to force the UI to redraw without changing content
-                                    var currentView = viewModel.CurrentView;
-                                    viewModel.CurrentView = null;
-                                    viewModel.CurrentView = currentView;
-                                }
-                            }
-                            catch (Exception ex) {
-                                Console.WriteLine($"[WINDOW TIMER] Error refreshing UI: {ex.Message}");
-                            }
-                        }, Avalonia.Threading.DispatcherPriority.Background);
-                    };
-                    timer.AutoReset = true;
-                    timer.Start();
                 }, Avalonia.Threading.DispatcherPriority.Background);
             };
         }

@@ -361,7 +361,16 @@ namespace FestivalMuzica.Server.Service
                     _logger.LogInformation($"Sending SignalR notification for new ticket: {ticket.ShowName}, Client: {ticket.Client.Name}");
                     try
                     {
-                        // Send ticket sold notification
+                        // Send show updated notification
+                        _hubContext.Clients.All.SendAsync("ShowUpdated", show)
+                            .ContinueWith(task => {
+                                if (task.IsCompletedSuccessfully)
+                                    _logger.LogInformation($"ShowUpdated notification sent after ticket sale");
+                                else
+                                    _logger.LogError(task.Exception, "Error sending ShowUpdated notification after ticket sale");
+                            });
+
+                        // Also send ticket sold notification
                         _hubContext.Clients.All.SendAsync("TicketSold", ticket)
                             .ContinueWith(task => {
                                 if (task.IsCompletedSuccessfully)
@@ -370,19 +379,10 @@ namespace FestivalMuzica.Server.Service
                                     _logger.LogError(task.Exception, "Error sending TicketSold notification");
                             });
                         
-                        // Also send show updated notification
-                        _hubContext.Clients.All.SendAsync("ShowUpdated", show)
-                            .ContinueWith(task => {
-                                if (task.IsCompletedSuccessfully)
-                                    _logger.LogInformation($"ShowUpdated notification sent after ticket sale");
-                                else
-                                    _logger.LogError(task.Exception, "Error sending ShowUpdated notification after ticket sale");
-                            });
-                        
                         // Send a second set of notifications with a slight delay to ensure clients get them
                         System.Threading.Tasks.Task.Delay(200).ContinueWith(_ => {
-                            _hubContext.Clients.All.SendAsync("TicketSold", ticket);
                             _hubContext.Clients.All.SendAsync("ShowUpdated", show);
+                            _hubContext.Clients.All.SendAsync("TicketSold", ticket);
                             _logger.LogInformation("Sent delayed notifications after ticket sale");
                         });
                     }
@@ -400,8 +400,8 @@ namespace FestivalMuzica.Server.Service
                 try
                 {
                     // Also try to send to each client individually using the static helper
-                    FestivalMuzica.Server.Hubs.FestivalHub.SendToAllConnections(_hubContext, "TicketSold", ticket).ConfigureAwait(false);
                     FestivalMuzica.Server.Hubs.FestivalHub.SendToAllConnections(_hubContext, "ShowUpdated", show).ConfigureAwait(false);
+                    FestivalMuzica.Server.Hubs.FestivalHub.SendToAllConnections(_hubContext, "TicketSold", ticket).ConfigureAwait(false);
                     
                     _logger.LogInformation("Used static helper to send to all connections individually");
                 }

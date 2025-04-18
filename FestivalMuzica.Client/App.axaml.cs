@@ -22,18 +22,6 @@ public partial class App : Application
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);
-        
-        // Try to set the application icon
-        try 
-        {
-            using var stream = File.OpenRead("Assets/ticket.png");
-            var bitmap = new Bitmap(stream);
-            _appIcon = new WindowIcon(bitmap);
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error loading app icon: {ex.Message}");
-        }
     }
 
     public override void OnFrameworkInitializationCompleted()

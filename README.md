@@ -17,23 +17,55 @@ The system uses a multi-layered architecture with both TCP and SignalR communica
 
 ### Login Window
 
-![Login Window](screenshots/login-window.png)
+<img src="screenshots/login-window.png" width="500" alt="Login Window">
+
+**Description**: The login window allows employees to access the system. Enter your credentials and click "Login" to authenticate. The system verifies employee credentials against the database.
 
 ### Main Window
 
-![Main Window](screenshots/main-window.png)
+<img src="screenshots/main-window.png" width="600" alt="Main Window">
+
+**Description**: The main interface after successful login. From here, you can access all functionalities:
+
+- Search for shows by various criteria
+- Sell tickets
+- Manage employees, clients, and shows
+- View real-time statistics
 
 ### Search Details Dropdown
 
-![Search Details](screenshots/search-details-dropdown.png)
+<img src="screenshots/search-details-dropdown.png" width="550" alt="Search Details Dropdown">
 
-### Search results shown
+**Description**: Use this dropdown to select specific search criteria for shows:
 
-![Search results](screenshots/showing-searching-results.png)
+- Search by date (select date range)
+- Search by artist name (enter artist name)
+- Search by available seats (specify minimum required seats)
+- Click "Search" to filter results according to selected criteria
 
-### Selling Ticket dropdown
+### Search Results
 
-![Selling Ticket](screenshots/selling-ticket-functionality.png)
+<img src="screenshots/showing-searching-results.png" width="550" alt="Search Results">
+
+**Description**: Results are displayed in a table format showing:
+
+- Show date and time
+- Artist name
+- Available seats (updates in real-time)
+- Sold seats (updates in real-time)
+- Select a show and click "Sell Ticket" to proceed to the ticket selling interface
+
+### Selling Ticket Functionality
+
+<img src="screenshots/selling-ticket-functionality.png" width="550" alt="Selling Ticket">
+
+**Description**: The ticket selling interface allows employees to:
+
+1. Select client from the dropdown or add a new client
+2. Enter the number of tickets to sell
+3. Click "Sell" to complete the transaction
+
+**Real-time Feature**: When a ticket is sold, the available and sold seats count updates instantly across all connected clients. Multiple employees can sell tickets simultaneously while seeing accurate seat availability.
 
 ## 🏗️ Architecture
 

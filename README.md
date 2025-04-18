@@ -70,7 +70,7 @@ The system uses a multi-layered architecture with both TCP and SignalR communica
 
 ### Search and Pagination Demo
 
-<video src="videos/searching-pagination.gif" width="650" controls></video>
+![Search and Pagination Demo](videos/searching-pagination.gif)
 
 **Features Demonstrated:**
 

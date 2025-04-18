@@ -66,6 +66,20 @@ The system uses a multi-layered architecture with both TCP and SignalR communica
 
 **Real-time Feature**: When a ticket is sold, the available and sold seats count updates instantly across all connected clients. Multiple employees can sell tickets simultaneously while seeing accurate seat availability.
 
+## 🎬 Demo Video
+
+### Search and Pagination Demo
+
+<video src="videos/searching-pagination.gif" width="650" controls></video>
+
+**Features Demonstrated:**
+
+- Debounced search functionality for optimal performance
+- Real-time search using various filters
+- Pagination for managing large result sets
+- Responsive UI updates as search criteria change
+- Smooth transitions between result pages
+
 ## 🏗️ Architecture
 
 The project is structured into several key components:

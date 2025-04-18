@@ -13,6 +13,28 @@ This application is designed to manage various aspects of a music festival, incl
 
 The system uses a multi-layered architecture with both TCP and SignalR communication protocols for real-time updates.
 
+## 📸 Screenshots
+
+### Login Window
+
+![Login Window](screenshots/login-window.png)
+
+### Main Window
+
+![Main Window](screenshots/main-window.png)
+
+### Search Details Dropdown
+
+![Search Details](screenshots/search-details-dropdown.png)
+
+### Search results shown
+
+![Search results](screenshots/showing-searching-results.png)
+
+### Selling Ticket dropdown
+
+![Selling Ticket](screenshots/selling-ticket-functionality.png)
+
 ## 🏗️ Architecture
 
 The project is structured into several key components:
@@ -25,6 +47,9 @@ The project is structured into several key components:
 ## 🚀 Features
 
 - Real-time updates using SignalR
+  - Available and sold seats are synchronized in real-time across all connected clients
+  - Multiple users can view and purchase tickets simultaneously
+  - Instant updates when tickets are sold or modified
 - TCP-based communication for core operations
 - Database persistence for all entities
 - Multi-user support
@@ -56,7 +81,7 @@ git clone [repository-url]
 2. Navigate to the project directory:
 
 ```bash
-cd FestivalMuzica
+cd mpp-proiect-csharp-Ianthe23
 ```
 
 3. Restore NuGet packages:
@@ -92,12 +117,12 @@ dotnet run
 ## 📁 Project Structure
 
 ```
-FestivalMuzica/
+mpp-proiect-csharp-Ianthe23/
 ├── FestivalMuzica.Client/        # Client application
 ├── FestivalMuzica.Server/        # Server application
 ├── FestivalMuzica.Networking/    # Networking components
 ├── FestivalMuzica.Common/        # Shared models and interfaces
-└── FestivalMuzica.sln           # Solution file
+└── mpp-proiect-csharp-Ianthe23.sln  # Solution file
 ```
 
 ## 🔐 Configuration
@@ -107,15 +132,3 @@ The server requires configuration in `appsettings.json`:
 - Database connection string
 - Server ports for TCP and SignalR
 - Logging configuration
-
-## 📝 License
-
-[Specify your license here]
-
-## 👥 Contributing
-
-[Add contribution guidelines if applicable]
-
-## 📞 Support
-
-[Add support information if applicable]

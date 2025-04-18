@@ -38,9 +38,8 @@ The system uses a multi-layered architecture with both TCP and SignalR communica
 
 **Description**: Use this dropdown to select specific search criteria for shows:
 
-- Search by date (select date range)
 - Search by artist name (enter artist name)
-- Search by available seats (specify minimum required seats)
+- Search by hour (HH:mm - select date range)
 - Click "Search" to filter results according to selected criteria
 
 ### Search Results
@@ -61,8 +60,8 @@ The system uses a multi-layered architecture with both TCP and SignalR communica
 
 **Description**: The ticket selling interface allows employees to:
 
-1. Select client from the dropdown or add a new client
-2. Enter the number of tickets to sell
+1. Write down the client's name
+2. Enter the number of seats to sell to that client
 3. Click "Sell" to complete the transaction
 
 **Real-time Feature**: When a ticket is sold, the available and sold seats count updates instantly across all connected clients. Multiple employees can sell tickets simultaneously while seeing accurate seat availability.
@@ -98,7 +97,7 @@ The project is structured into several key components:
 
 ## 📋 Prerequisites
 
-- .NET 6.0 or later
+- .NET 9.0 for Windows
 - SQL Server (or compatible database)
 - Visual Studio 2022 (recommended) or VS Code
 

@@ -1,4 +1,4 @@
-# Festival Muzica - Client-Server Application
+# MusicMoon Festival - Client-Server Application
 
 A .NET-based client-server application for managing a music festival, featuring both TCP and SignalR communication protocols.
 
